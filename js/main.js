@@ -53,15 +53,35 @@ function initCookieBanner() {
   try {
     acknowledged = localStorage.getItem(KEY) === "1";
   } catch (e) {}
-  if (!acknowledged) banner.hidden = false;
+  if (!acknowledged) {
+    banner.hidden = false;
+    document.body.classList.add("has-cookie-banner");
+  }
   ackBtn.addEventListener("click", () => {
     banner.hidden = true;
+    document.body.classList.remove("has-cookie-banner");
     try {
       localStorage.setItem(KEY, "1");
     } catch (e) {}
   });
 }
 initCookieBanner();
+
+/* ---------- WhatsApp floating button: appears once the visitor has
+   scrolled past the hero (state, not decorative motion — the CSS
+   transition itself is what's disabled under reduced motion). ---------- */
+function initWhatsappFab() {
+  const fab = document.querySelector(".whatsapp-fab");
+  const hero = document.querySelector(".hero");
+  if (!fab || !hero) return;
+  ScrollTrigger.create({
+    trigger: hero,
+    start: "bottom top",
+    onEnter: () => fab.classList.add("is-visible"),
+    onLeaveBack: () => fab.classList.remove("is-visible"),
+  });
+}
+initWhatsappFab();
 
 /* ---------- Map: only loads Google's iframe (and its cookies) on click ---------- */
 function initMapConsent() {
@@ -189,6 +209,8 @@ function initCartaFilters() {
   if (!group || !cards.length) return;
   const pills = Array.from(group.querySelectorAll(".carta-filter"));
 
+  const grid = document.querySelector(".carta-grid");
+
   function applyFilter(filter, animate) {
     // Cards also carry an independent tilt tween (initTiltCards, driven by
     // mousemove) on the same transform property Flip animates. If the
@@ -198,6 +220,7 @@ function initCartaFilters() {
     // and block pointer events for the duration of the transition so
     // nothing new can start one.
     gsap.killTweensOf(cards);
+    const beforeHeight = grid ? grid.getBoundingClientRect().height : 0;
     const state = animate && window.Flip ? Flip.getState(cards) : null;
 
     cards.forEach((card) => {
@@ -206,17 +229,33 @@ function initCartaFilters() {
     });
 
     if (state) {
+      // Hiding cards shrinks the grid's natural height instantly (plain
+      // layout, nothing Flip controls), which used to yank everything
+      // below "La carta" up a beat before the cards finished sliding
+      // into place. Lock the grid to its old height and tween it to the
+      // new one in step with the card transition so the whole section
+      // resizes smoothly instead of jumping.
+      const afterHeight = grid ? grid.getBoundingClientRect().height : 0;
+      if (grid) gsap.set(grid, { height: beforeHeight, overflow: "hidden" });
       gsap.set(cards, { pointerEvents: "none" });
-      Flip.from(state, {
-        duration: 0.5,
-        ease: "power2.inOut",
-        absolute: true,
-        onEnter: (els) => gsap.fromTo(els, { opacity: 0, scale: 0.92 }, { opacity: 1, scale: 1, duration: 0.4, stagger: 0.05, ease: "power2.out" }),
-        onLeave: (els) => gsap.to(els, { opacity: 0, scale: 0.92, duration: 0.25, ease: "power2.in" }),
+
+      const tl = gsap.timeline({
         onComplete: () => {
           gsap.set(cards, { clearProps: "transform,pointerEvents" });
+          if (grid) gsap.set(grid, { clearProps: "height,overflow" });
         },
       });
+      if (grid) tl.to(grid, { height: afterHeight, duration: 0.5, ease: "power2.inOut" }, 0);
+      tl.add(
+        Flip.from(state, {
+          duration: 0.5,
+          ease: "power2.inOut",
+          absolute: true,
+          onEnter: (els) => gsap.fromTo(els, { opacity: 0, scale: 0.92 }, { opacity: 1, scale: 1, duration: 0.4, stagger: 0.05, ease: "power2.out" }),
+          onLeave: (els) => gsap.to(els, { opacity: 0, scale: 0.92, duration: 0.25, ease: "power2.in" }),
+        }),
+        0
+      );
     }
   }
 

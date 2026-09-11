@@ -88,10 +88,14 @@ que aceptar mientras no se cargue el mapa. La elección se guarda en
   dominio propio confirmado todavía. Cuando el negocio tenga su propio
   dominio hay que sustituir esa URL en `index.html` (canonical, `og:url`,
   `og:image`, `twitter:image` y el JSON-LD).
-- No se muestra valoración de Google ni reseñas: las cifras que ofrecían los
-  directorios de terceros eran contradictorias entre sí (4.7★/87 reseñas
-  frente a 4.5★/12 reseñas), así que se ha preferido no mostrar ningún
-  número en vez de arriesgarse a publicar uno incorrecto.
+- Valoración de Google: se mostró contradictoria en directorios de terceros
+  (4.7★/87 reseñas frente a 4.5★/12 reseñas), así que no se publicó ningún
+  número hasta que el propietario confirmó la cifra real directamente sobre
+  la ficha de Google del negocio: **4.8★, 17 reseñas**
+  (`https://share.google/bW9lgUvX52iownn9A`). Se muestra como sello en la
+  hero (`.google-seal` en `index.html`/`css/style.css`, enlaza a la ficha) y
+  en el `aggregateRating` del JSON-LD. Si la cifra cambia, hay que
+  actualizarla en ambos sitios.
 
 ## Validación hecha
 
