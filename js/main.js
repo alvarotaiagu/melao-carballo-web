@@ -352,12 +352,52 @@ document.querySelectorAll("[data-scroll-target]").forEach((btn) => {
   btn.addEventListener("click", () => smoothScrollToSelector(btn.dataset.scrollTarget));
 });
 
+/* ---------- Sliding nav underline: a single bar that moves/resizes to
+   sit under whichever link is hovered, focused, or — once the pointer
+   leaves — the scroll-spy's current section. Snaps instantly (no tween)
+   under prefers-reduced-motion. ---------- */
+function placeNavUnderline(link, animate = true) {
+  const nav = document.querySelector(".site-nav");
+  const underline = nav && nav.querySelector(".nav-underline");
+  if (!nav || !underline) return;
+  if (!link) {
+    gsap.to(underline, { width: 0, duration: animate ? 0.25 : 0, ease: "power2.out" });
+    return;
+  }
+  const navRect = nav.getBoundingClientRect();
+  const linkRect = link.getBoundingClientRect();
+  const vars = { x: linkRect.left - navRect.left, width: linkRect.width };
+  if (animate) {
+    gsap.to(underline, { ...vars, duration: 0.35, ease: "power3.out" });
+  } else {
+    gsap.set(underline, vars);
+  }
+}
+
+function initNavUnderline() {
+  const nav = document.querySelector(".site-nav");
+  if (!nav) return;
+  const links = Array.from(nav.querySelectorAll("a"));
+  links.forEach((link) => {
+    link.addEventListener("mouseenter", () => placeNavUnderline(link, !reduceQuery.matches));
+    link.addEventListener("focus", () => placeNavUnderline(link, !reduceQuery.matches));
+  });
+  nav.addEventListener("mouseleave", () => placeNavUnderline(nav.querySelector("a.is-active"), !reduceQuery.matches));
+  nav.addEventListener("focusout", (e) => {
+    if (nav.contains(e.relatedTarget)) return;
+    placeNavUnderline(nav.querySelector("a.is-active"), !reduceQuery.matches);
+  });
+  window.addEventListener("resize", () => placeNavUnderline(nav.querySelector("a.is-active"), false));
+}
+initNavUnderline();
+
 /* ---------- Nav scroll-spy (state, not motion — runs regardless) ---------- */
 function initScrollSpy() {
   const navLinks = document.querySelectorAll('.site-nav a[href^="#"], .mobile-nav a[href^="#"], .footer-nav a[href^="#"]');
   if (!navLinks.length) return;
   function setActive(id) {
     navLinks.forEach((a) => a.classList.toggle("is-active", a.getAttribute("href") === "#" + id));
+    placeNavUnderline(document.querySelector(`.site-nav a[href="#${id}"]`), !reduceQuery.matches);
   }
   ["mezcla", "carta", "estrella", "encuentranos"].forEach((id) => {
     const el = document.getElementById(id);

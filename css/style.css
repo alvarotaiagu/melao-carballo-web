@@ -163,16 +163,29 @@ h2 {
 }
 .brand-mark { width: 26px; height: 26px; object-fit: contain; flex-shrink: 0; }
 
+.site-nav { position: relative; }
 .site-nav ul { display: flex; gap: 2rem; }
 .site-nav a {
+  display: inline-block;
   font-size: 0.95rem;
   font-weight: 500;
   padding: 0.3rem 0;
-  border-bottom: 1px solid transparent;
-  transition: border-color 0.2s ease, opacity 0.2s ease;
+  transition: opacity 0.2s ease;
   opacity: 0.82;
 }
-.site-nav a:hover, .site-nav a:focus-visible, .site-nav a.is-active { border-color: var(--coral-deep); opacity: 1; }
+.site-nav a:hover, .site-nav a:focus-visible, .site-nav a.is-active { opacity: 1; }
+
+/* A single shared bar that slides/resizes to sit under whichever link is
+   hovered, focused, or the scroll-spy's current section — driven by
+   initNavUnderline() in js/main.js. Zero width until JS positions it, so
+   it's simply invisible (not a stray line) if JS never runs. */
+.nav-underline {
+  position: absolute;
+  left: 0; bottom: -2px;
+  width: 0; height: 1.5px;
+  background: var(--coral-deep);
+  pointer-events: none;
+}
 
 .nav-instagram { display: inline-flex; font-size: 1.3rem; opacity: 0.85; transition: opacity 0.2s ease, transform 0.2s ease; }
 .nav-instagram:hover, .nav-instagram:focus-visible { opacity: 1; transform: translateY(-1px); }
@@ -487,6 +500,7 @@ h2 {
 }
 .carta-card[hidden] { display: none; }
 .carta-card {
+  position: relative;
   background: var(--paper);
   border-radius: 1.25rem;
   padding: 1.9rem 1.9rem 1.6rem;
@@ -496,24 +510,50 @@ h2 {
   transition: box-shadow 0.3s ease;
 }
 .carta-card:hover { box-shadow: 0 30px 50px -30px rgba(36, 22, 8, 0.4); }
+.carta-card-number {
+  position: absolute;
+  top: 1.15rem; right: 1.5rem;
+  font-family: var(--serif);
+  font-size: 2.1rem;
+  font-weight: 560;
+  line-height: 1;
+  color: color-mix(in srgb, var(--ink) 11%, transparent);
+  pointer-events: none;
+}
 .carta-card-head {
+  position: relative;
   display: flex;
   align-items: flex-start;
   gap: 0.85rem;
   padding-bottom: 1.1rem;
   margin-bottom: 1.1rem;
+  padding-right: 3rem;
   border-bottom: 1px solid var(--line-soft);
 }
 .carta-card-head iconify-icon { font-size: 1.7rem; color: var(--coral-deep); margin-top: 0.15rem; }
 .carta-card-head h3 { font-family: var(--serif); font-size: 1.3rem; font-weight: 620; }
 .carta-card-hours { display: block; font-size: 0.8rem; color: var(--ink-faint); margin-top: 0.15rem; }
 .carta-items li {
+  position: relative;
   display: flex;
   justify-content: space-between;
   gap: 1rem;
   padding: 0.55rem 0;
   font-size: 0.98rem;
+  transition: padding-left 0.25s ease;
 }
+.carta-items li::before {
+  content: "";
+  position: absolute;
+  left: -1.1rem; top: 18%; bottom: 18%;
+  width: 3px;
+  border-radius: 3px;
+  background: var(--coral-deep);
+  transform: scaleY(0);
+  transition: transform 0.28s ease;
+}
+.carta-items li:hover { padding-left: 0.5rem; }
+.carta-items li:hover::before { transform: scaleY(1); }
 .carta-items li + li { border-top: 1px dashed var(--line-soft); }
 .carta-items .price { color: var(--coral-deep); font-weight: 700; white-space: nowrap; }
 
