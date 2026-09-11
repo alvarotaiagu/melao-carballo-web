@@ -22,12 +22,14 @@ con `file://` porque el `<script type="module">` y las fuentes necesitan HTTP.
   visual de "tres cocinas".
 - **Tipografía:** Fraunces (serif editorial con carácter, para titulares) +
   Manrope (texto e interfaz).
-- **Fotografía:** una sola foto real de plato (facilitada por el propietario,
-  `assets/img/dish-original.jpg`; recortes optimizados en `assets/img/web/`),
-  usada en la hero y en "De cocina" con dos encuadres distintos del mismo
-  original. No hay fotografía de stock, ambiente inventado ni gente falsa en
-  ningún sitio — con una sola foto real disponible, el resto de secciones se
-  apoyan en tipografía, color e iconografía en vez de imágenes inventadas.
+- **Fotografía:** cinco fotos reales facilitadas por el propietario
+  (`assets/img/*-original.jpg`; recortes optimizados en `assets/img/web/`):
+  la milanesa (hero y pieza destacada de "De cocina"), pancakes en la barra,
+  un cóctel, un pancake de chocolate y una tarta sobre la sala. Las cuatro
+  últimas forman el mosaico de "De cocina", con lightbox al hacer clic. No
+  hay fotografía de stock, ambiente inventado ni gente falsa en ningún
+  sitio — donde no hay foto real (el resto de secciones), se apoya en
+  tipografía, color e iconografía en vez de imágenes inventadas.
 - **Motion:** GSAP + ScrollTrigger para las revelaciones por sección (una
   sola secuencia por sección) y el parallax de la marca de agua; Lenis como
   único motor de scroll suave. Three.js solo en la hero: un shader propio
@@ -58,8 +60,8 @@ que aceptar mientras no se cargue el mapa. La elección se guarda en
 ## Contenido real vs. pendiente
 
 **Confirmado y usado tal cual:**
-- Nombre, logo real, foto real de plato, cuenta de Instagram
-  (`@melaocarballo`).
+- Nombre, logo real, cinco fotos reales (plato, barra, cóctel, postre, sala),
+  cuenta de Instagram (`@melaocarballo`).
 - Dirección (Avenida Ponte da Pedra, 18, 15100 Carballo) y horario: cruzados
   entre varios directorios públicos independientes (búsqueda web,
   rutaculinaria.com, cafeelsiglo.es) que coinciden en los mismos datos.

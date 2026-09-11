@@ -82,6 +82,103 @@ function initMapConsent() {
 }
 initMapConsent();
 
+/* ---------- Kitchen gallery lightbox: click a photo to view it larger,
+   with keyboard support (Escape, arrows, a focus trap among its 3
+   controls). Pauses Lenis while open so the background can't scroll
+   underneath. ---------- */
+function initLightbox() {
+  const lightbox = document.getElementById("lightbox");
+  if (!lightbox) return;
+  const triggers = Array.from(document.querySelectorAll(".cocina-item"));
+  if (!triggers.length) return;
+
+  const slides = triggers.map((btn) => {
+    const img = btn.querySelector("img");
+    const captionEl = btn.querySelector(".cocina-caption");
+    const caption = captionEl ? captionEl.textContent.trim() : "";
+    if (caption) btn.setAttribute("aria-label", `Ver foto ampliada: ${caption}`);
+    return { src: img.currentSrc || img.src, alt: img.alt, caption };
+  });
+
+  const backdrop = lightbox.querySelector(".lightbox-backdrop");
+  const closeBtn = lightbox.querySelector(".lightbox-close");
+  const prevBtn = lightbox.querySelector(".lightbox-prev");
+  const nextBtn = lightbox.querySelector(".lightbox-next");
+  const figure = lightbox.querySelector(".lightbox-figure");
+  const imgEl = lightbox.querySelector(".lightbox-img");
+  const captionEl = lightbox.querySelector(".lightbox-caption");
+
+  let currentIndex = 0;
+  let lastTrigger = null;
+
+  function render() {
+    const slide = slides[currentIndex];
+    imgEl.src = slide.src;
+    imgEl.alt = slide.alt;
+    captionEl.textContent = slide.caption;
+  }
+
+  function show(index) {
+    currentIndex = (index + slides.length) % slides.length;
+    render();
+  }
+
+  function onKeydown(e) {
+    if (e.key === "Escape") {
+      e.preventDefault();
+      close();
+    } else if (e.key === "ArrowRight") {
+      show(currentIndex + 1);
+    } else if (e.key === "ArrowLeft") {
+      show(currentIndex - 1);
+    } else if (e.key === "Tab") {
+      e.preventDefault();
+      const list = [closeBtn, prevBtn, nextBtn];
+      let idx = list.indexOf(document.activeElement);
+      if (idx === -1) idx = 0;
+      idx = e.shiftKey ? (idx - 1 + list.length) % list.length : (idx + 1) % list.length;
+      list[idx].focus();
+    }
+  }
+
+  function open(index, triggerEl) {
+    currentIndex = index;
+    lastTrigger = triggerEl || null;
+    render();
+    lightbox.hidden = false;
+    document.body.style.overflow = "hidden";
+    if (lenis) lenis.stop();
+    requestAnimationFrame(() => lightbox.classList.add("is-open"));
+    document.addEventListener("keydown", onKeydown);
+    closeBtn.focus();
+  }
+
+  function close() {
+    lightbox.classList.remove("is-open");
+    document.removeEventListener("keydown", onKeydown);
+    document.body.style.overflow = "";
+    if (lenis) lenis.start();
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      lightbox.hidden = true;
+      if (lastTrigger) lastTrigger.focus();
+    };
+    figure.addEventListener("transitionend", finish, { once: true });
+    setTimeout(finish, 350);
+  }
+
+  triggers.forEach((btn, i) => {
+    btn.addEventListener("click", () => open(i, btn));
+  });
+  closeBtn.addEventListener("click", close);
+  backdrop.addEventListener("click", close);
+  prevBtn.addEventListener("click", () => show(currentIndex - 1));
+  nextBtn.addEventListener("click", () => show(currentIndex + 1));
+}
+initLightbox();
+
 /* ---------- Opening hours: live "open now" status + today highlight ----------
    Real hours (cross-checked across several public listings for this
    business). Each day can have zero, one or two service windows, and
@@ -288,6 +385,7 @@ mm.add(
         initTiltCards();
         initHeroTilt();
         initSpotlight();
+        initCocinaParallax();
       }
 
       window.addEventListener("pagehide", () => {
@@ -330,17 +428,34 @@ function runHeroIntro() {
   tl.from(".scroll-cue", { opacity: 0, duration: 0.5 }, "-=0.2");
 }
 
-/* ---------- Section-by-section reveals ---------- */
+/* ---------- Section-by-section reveals ----------
+   Three choreographed waves per section, all triggered once as the
+   section crosses ~78% of the viewport: (1) the heading, word by word,
+   (2) body copy — a plain fade + rise, and (3) cards/photos — the same
+   rise plus a soft scale-in, so they read as distinct "objects" landing
+   into place rather than text. A fourth, faster wave cascades the rows
+   inside any card that just landed (menu prices, hour rows), like the
+   list is printing itself. Nothing here is scrubbed — it plays once,
+   forward, then leaves the final state alone. ---------- */
 function runSectionReveals() {
   document.querySelectorAll("[data-reveal-group]").forEach((group) => {
     const heading = group.querySelector("h2");
-    const headingWords = heading ? splitMap.get(heading) : null;
-    const rest = group.querySelectorAll(
-      "p, .origin-card, .carta-card, .estrella-copy .btn, .hours-card, .info-list li, .map-card"
+    const headingSplitTargets = heading
+      ? Array.from(heading.matches("[data-split-word]") ? [heading] : heading.querySelectorAll("[data-split-word]"))
+      : [];
+    const headingWords = headingSplitTargets.length
+      ? headingSplitTargets.flatMap((el) => splitMap.get(el) || [])
+      : null;
+    const blocks = group.querySelectorAll("p, .estrella-cta");
+    const cards = group.querySelectorAll(
+      ".origin-card, .carta-card, .cocina-item, .hours-card, .info-list li, .map-card"
     );
+    const rows = group.querySelectorAll(".carta-card .carta-items li, .hours-list li");
 
     if (headingWords) gsap.set(headingWords, { yPercent: 110, opacity: 0 });
-    gsap.set(rest, { y: 18, opacity: 0 });
+    gsap.set(blocks, { y: 16, opacity: 0 });
+    gsap.set(cards, { y: 30, opacity: 0, scale: 0.95 });
+    gsap.set(rows, { opacity: 0 });
 
     const tl = gsap.timeline({
       scrollTrigger: {
@@ -352,7 +467,15 @@ function runSectionReveals() {
     if (headingWords) {
       tl.to(headingWords, { yPercent: 0, opacity: 1, duration: 0.8, stagger: 0.05, ease: "power4.out" });
     }
-    tl.to(rest, { y: 0, opacity: 1, duration: 0.7, stagger: 0.06, ease: "power2.out" }, headingWords ? "-=0.35" : 0);
+    tl.to(blocks, { y: 0, opacity: 1, duration: 0.7, stagger: 0.06, ease: "power2.out" }, headingWords ? "-=0.35" : 0);
+    tl.to(
+      cards,
+      { y: 0, opacity: 1, scale: 1, duration: 0.85, stagger: 0.09, ease: "power3.out" },
+      headingWords || blocks.length ? "-=0.4" : 0
+    );
+    if (rows.length) {
+      tl.to(rows, { opacity: 1, duration: 0.4, stagger: 0.025, ease: "power1.out" }, "-=0.35");
+    }
   });
 }
 
@@ -447,6 +570,34 @@ function initTiltCards() {
     el.addEventListener("mouseleave", () => {
       rotX(0);
       rotY(0);
+    });
+  });
+}
+
+/* ---------- Kitchen gallery: photo drifts opposite the pointer, on
+   top of its own hover zoom (CSS) — a "window" parallax so the photos
+   feel physically behind the frame, not flat. ---------- */
+function initCocinaParallax() {
+  document.querySelectorAll(".cocina-item").forEach((item) => {
+    const img = item.querySelector("img");
+    if (!img) return;
+    gsap.set(img, { scale: 1.1 });
+    const moveX = gsap.quickTo(img, "xPercent", { duration: 0.5, ease: "power2" });
+    const moveY = gsap.quickTo(img, "yPercent", { duration: 0.5, ease: "power2" });
+    const scaleTo = gsap.quickTo(img, "scale", { duration: 0.5, ease: "power2" });
+
+    item.addEventListener("mouseenter", () => scaleTo(1.16));
+    item.addEventListener("mousemove", (e) => {
+      const rect = item.getBoundingClientRect();
+      const px = (e.clientX - rect.left) / rect.width - 0.5;
+      const py = (e.clientY - rect.top) / rect.height - 0.5;
+      moveX(-px * 6);
+      moveY(-py * 6);
+    });
+    item.addEventListener("mouseleave", () => {
+      scaleTo(1.1);
+      moveX(0);
+      moveY(0);
     });
   });
 }

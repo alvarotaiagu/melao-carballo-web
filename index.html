@@ -126,7 +126,7 @@
 
       <div class="hero-media">
         <figure class="hero-photo-card">
-          <span class="lqip-bg" aria-hidden="true" style="background-image:url('data:image/jpeg;base64,/9j/4AAQSkZJRgABAgAAQQBCAAD//gAQTGF2YzYxLjE5LjEwMQD/2wBDAAgKCgsKCw0NDQ0NDRAPEBAQEBAQEBAQEBASEhIVFRUSEhIQEBISFBQVFRcXFxUVFRUXFxkZGR4eHBwjIyQrKzP/xAB4AAACAwEAAAAAAAAAAAAAAAABBQQGAgMBAAIDAQAAAAAAAAAAAAAAAAYCBAMBBRAAAgEDAgQEBwEAAAAAAAAAAgEDABEhBBJhUTETQSMFInFygRQVUpEzEQABAwQDAQEBAAAAAAAAAAABABECUUEhAxIxcSKxof/AABEIABQAGAMBIgACEQADEQD/2gAMAwEAAhEDEQA/AJ+u1YRbQfee41GEceFIbx5h3ul1sle6F+NZOSMJhFeXOTFXjTGIcdP2XR+54rqUpIXLHG5TB7hHC91+ucYTfHlUP8uEEbHUAu4SJCA7WbI8K7JW2/T4UKEk8QHY9N/OqXRaHYvbsJ9u3AJ7svq+fGhvfOlbm7USBNO1Rvuj5L+1TPaIyZ/WrdbESITP1TTR6ZKWHdG2hdk/bng70gikKTcys3jNlfHGrT63/iPyhVR0/jTbyYSkIniKDH4k1fUAZZ9yuzV6FlWqFcskqav/2Q==')"></span>
+          <span class="lqip-bg" aria-hidden="true" style="background-image:url('assets/img/web/dish-hero-lqip.jpg')"></span>
           <img
             class="hero-photo lqip-img"
             src="assets/img/web/dish-hero-1600.jpg"
@@ -166,7 +166,7 @@
     <span class="ghost-word" aria-hidden="true">MELAO</span>
     <div class="section-inner mezcla-inner">
       <p class="eyebrow">Nuestra mezcla</p>
-      <h2>Tres cocinas.<br>Una sola mesa.</h2>
+      <h2><span data-split-word>Tres cocinas.</span><br><span data-split-word>Una sola mesa.</span></h2>
       <p class="mezcla-lead">
         En Venezuela, «melao» es como le dices a alguien que quieres. Aquí es como llamamos a la casa: un
         sitio donde el brunch dura hasta la tarde, la pinsa romana se hornea al momento y la hamburguesa se
@@ -196,7 +196,7 @@
   <section id="carta" class="carta section-block" data-reveal-group>
     <div class="section-inner">
       <p class="eyebrow">La carta</p>
-      <h2>Un poco de cada casa.</h2>
+      <h2 data-split-word>Un poco de cada casa.</h2>
       <p class="carta-lead">
         Esto es solo un aperitivo — la carta completa (desayunos, pinsas, hamburguesas, para compartir y
         mucho más) te espera en el local y en nuestro Instagram. Precios de referencia; pueden variar.
@@ -266,36 +266,91 @@
             <li><span>Bianca cabra, cebolla caramelizada</span><span class="price">13,00 €</span></li>
           </ul>
         </article>
+
+        <article class="carta-card">
+          <header class="carta-card-head">
+            <iconify-icon icon="solar:cake-linear" aria-hidden="true"></iconify-icon>
+            <div>
+              <h3>Postres</h3>
+              <span class="carta-card-hours">Todo el día</span>
+            </div>
+          </header>
+          <ul class="carta-items">
+            <li><span>Cheesecake</span><span class="price">3,50 €</span></li>
+            <li><span>Red velvet</span><span class="price">3,50 €</span></li>
+            <li><span>Carrot cake</span><span class="price">3,50 €</span></li>
+            <li><span>Tarta del día</span><span class="price">4,00 €</span></li>
+          </ul>
+        </article>
+
+        <article class="carta-card">
+          <header class="carta-card-head">
+            <iconify-icon icon="solar:cup-hot-linear" aria-hidden="true"></iconify-icon>
+            <div>
+              <h3>Bebidas</h3>
+              <span class="carta-card-hours">Todo el día</span>
+            </div>
+          </header>
+          <ul class="carta-items">
+            <li><span>Affogato</span><span class="price">4,00 €</span></li>
+            <li><span>Capuchino</span><span class="price">1,80 €</span></li>
+            <li><span>Batidos y frappés</span><span class="price">3,50 €</span></li>
+            <li><span>Infusiones</span><span class="price">1,60 €</span></li>
+          </ul>
+        </article>
       </div>
     </div>
   </section>
 
   <section id="estrella" class="estrella section-block" data-reveal-group>
-    <div class="section-inner estrella-inner">
-      <div class="estrella-copy">
-        <p class="eyebrow">De cocina</p>
-        <h2>Así sale de la plancha.</h2>
-        <p>
-          Milanesa napolitana: pechuga rebozada, salsa napolitana y una manta de mozzarella gratinada, servida
-          sobre una cama de patatas fritas. Tal cual la ves aquí y en nuestro Instagram — sin foto de estudio,
-          sin retoque.
-        </p>
-        <a class="btn btn-ghost" href="https://www.instagram.com/melaocarballo/" target="_blank" rel="noopener noreferrer">
-          <span>Ver más platos en Instagram</span>
-        </a>
+    <div class="section-inner">
+      <p class="eyebrow">De cocina</p>
+      <h2 data-split-word>Así sale de la plancha.</h2>
+      <p class="estrella-lead">
+        Sin foto de estudio, sin retoque — tal cual sale de cocina y tal cual la vemos en nuestro Instagram.
+        Toca cualquier foto para verla más grande.
+      </p>
+
+      <div class="cocina-grid">
+        <button type="button" class="cocina-item cocina-item--feature">
+          <span class="lqip-bg" aria-hidden="true" style="background-image:url('assets/img/web/dish-square-lqip.jpg')"></span>
+          <img class="lqip-img" src="assets/img/web/dish-square-1200.jpg" srcset="assets/img/web/dish-square-700.jpg 700w, assets/img/web/dish-square-1200.jpg 1200w" sizes="(max-width: 900px) 90vw, 44vw" alt="Milanesa napolitana gratinada con queso y patatas fritas" width="1100" height="1100" loading="lazy" decoding="async">
+          <span class="cocina-caption">Milanesa napolitana</span>
+          <span class="cocina-expand" aria-hidden="true"><iconify-icon icon="solar:maximize-linear"></iconify-icon></span>
+        </button>
+
+        <button type="button" class="cocina-item">
+          <span class="lqip-bg" aria-hidden="true" style="background-image:url('assets/img/web/cocina-pancakes-barra-lqip.jpg')"></span>
+          <img class="lqip-img" src="assets/img/web/cocina-pancakes-barra-900.jpg" srcset="assets/img/web/cocina-pancakes-barra-500.jpg 500w, assets/img/web/cocina-pancakes-barra-900.jpg 900w" sizes="(max-width: 900px) 45vw, 22vw" alt="Dos platos de pancakes servidos en la barra de Melao, con la sala al fondo" width="1080" height="1080" loading="lazy" decoding="async">
+          <span class="cocina-caption">Pancakes en la barra</span>
+          <span class="cocina-expand" aria-hidden="true"><iconify-icon icon="solar:maximize-linear"></iconify-icon></span>
+        </button>
+
+        <button type="button" class="cocina-item">
+          <span class="lqip-bg" aria-hidden="true" style="background-image:url('assets/img/web/cocina-coctel-lqip.jpg')"></span>
+          <img class="lqip-img" src="assets/img/web/cocina-coctel-900.jpg" srcset="assets/img/web/cocina-coctel-500.jpg 500w, assets/img/web/cocina-coctel-900.jpg 900w" sizes="(max-width: 900px) 45vw, 22vw" alt="Cóctel con fresas y hielo servido en copa, junto al rótulo &quot;Cocktail&quot; de la barra" width="1080" height="1080" loading="lazy" decoding="async">
+          <span class="cocina-caption">También hay cócteles</span>
+          <span class="cocina-expand" aria-hidden="true"><iconify-icon icon="solar:maximize-linear"></iconify-icon></span>
+        </button>
+
+        <button type="button" class="cocina-item">
+          <span class="lqip-bg" aria-hidden="true" style="background-image:url('assets/img/web/cocina-pancake-choco-lqip.jpg')"></span>
+          <img class="lqip-img" src="assets/img/web/cocina-pancake-choco-900.jpg" srcset="assets/img/web/cocina-pancake-choco-500.jpg 500w, assets/img/web/cocina-pancake-choco-900.jpg 900w" sizes="(max-width: 900px) 45vw, 22vw" alt="Pancake bañado en chocolate y azúcar glas, visto desde arriba" width="1080" height="1080" loading="lazy" decoding="async">
+          <span class="cocina-caption">Pancake de chocolate</span>
+          <span class="cocina-expand" aria-hidden="true"><iconify-icon icon="solar:maximize-linear"></iconify-icon></span>
+        </button>
+
+        <button type="button" class="cocina-item">
+          <span class="lqip-bg" aria-hidden="true" style="background-image:url('assets/img/web/cocina-tarta-sala-lqip.jpg')"></span>
+          <img class="lqip-img" src="assets/img/web/cocina-tarta-sala-900.jpg" srcset="assets/img/web/cocina-tarta-sala-500.jpg 500w, assets/img/web/cocina-tarta-sala-900.jpg 900w" sizes="(max-width: 900px) 45vw, 22vw" alt="Tarta de frutos rojos sobre la mesa, con la sala de Melao al fondo" width="1440" height="1440" loading="lazy" decoding="async">
+          <span class="cocina-caption">Tarta de frutos rojos</span>
+          <span class="cocina-expand" aria-hidden="true"><iconify-icon icon="solar:maximize-linear"></iconify-icon></span>
+        </button>
       </div>
-      <figure class="estrella-photo-card">
-        <span class="lqip-bg" aria-hidden="true" style="background-image:url('data:image/jpeg;base64,/9j/4AAQSkZJRgABAgAAQQBCAAD//gAQTGF2YzYxLjE5LjEwMQD/2wBDAAgKCgsKCw0NDQ0NDRAPEBAQEBAQEBAQEBASEhIVFRUSEhIQEBISFBQVFRcXFxUVFRUXFxkZGR4eHBwjIyQrKzP/xAB4AAACAwEAAAAAAAAAAAAAAAABBQQGAgMBAAIDAQAAAAAAAAAAAAAAAAYCBAMBBRAAAgEDAgQEBwEAAAAAAAAAAgEDABEhBBJhUTETQSMFInFygRQVUpEzEQABAwQDAQEBAAAAAAAAAAABABECUUEhAxIxcSKxof/AABEIABQAGAMBIgACEQADEQD/2gAMAwEAAhEDEQA/AJ+u1YRbQfee41GEceFIbx5h3ul1sle6F+NZOSMJhFeXOTFXjTGIcdP2XR+54rqUpIXLHG5TB7hHC91+ucYTfHlUP8uEEbHUAu4SJCA7WbI8K7JW2/T4UKEk8QHY9N/OqXRaHYvbsJ9u3AJ7svq+fGhvfOlbm7USBNO1Rvuj5L+1TPaIyZ/WrdbESITP1TTR6ZKWHdG2hdk/bng70gikKTcys3jNlfHGrT63/iPyhVR0/jTbyYSkIniKDH4k1fUAZZ9yuzV6FlWqFcskqav/2Q==')"></span>
-        <img
-          class="lqip-img"
-          src="assets/img/web/dish-square-1200.jpg"
-          srcset="assets/img/web/dish-square-700.jpg 700w, assets/img/web/dish-square-1200.jpg 1200w"
-          sizes="(max-width: 900px) 90vw, 480px"
-          alt="Primer plano cenital de la milanesa napolitana de Melao, con queso gratinado y patatas fritas"
-          width="1100" height="1100"
-          loading="lazy"
-          decoding="async">
-      </figure>
+
+      <a class="btn btn-ghost estrella-cta" href="https://www.instagram.com/melaocarballo/" target="_blank" rel="noopener noreferrer">
+        <span>Ver más platos en Instagram</span>
+      </a>
     </div>
   </section>
 
@@ -303,7 +358,7 @@
     <div class="section-inner encuentranos-inner">
       <div class="encuentranos-info">
         <p class="eyebrow eyebrow--invert">Encuéntranos</p>
-        <h2>Te guardamos sitio.</h2>
+        <h2 data-split-word>Te guardamos sitio.</h2>
 
         <div class="hours-card">
           <div class="hours-status">
@@ -419,6 +474,26 @@
   <button type="button" class="btn btn-primary cookie-ack">
     <span>Entendido</span>
   </button>
+</div>
+
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Foto ampliada" hidden>
+  <div class="lightbox-backdrop" data-lightbox-close></div>
+  <button type="button" class="lightbox-control lightbox-close" data-lightbox-close>
+    <iconify-icon icon="solar:close-square-linear" aria-hidden="true"></iconify-icon>
+    <span class="visually-hidden">Cerrar</span>
+  </button>
+  <button type="button" class="lightbox-control lightbox-prev">
+    <iconify-icon icon="solar:arrow-left-linear" aria-hidden="true"></iconify-icon>
+    <span class="visually-hidden">Foto anterior</span>
+  </button>
+  <button type="button" class="lightbox-control lightbox-next">
+    <iconify-icon icon="solar:arrow-right-linear" aria-hidden="true"></iconify-icon>
+    <span class="visually-hidden">Siguiente foto</span>
+  </button>
+  <figure class="lightbox-figure">
+    <img class="lightbox-img" src="" alt="">
+    <figcaption class="lightbox-caption"></figcaption>
+  </figure>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.15.0/gsap.min.js"></script>
