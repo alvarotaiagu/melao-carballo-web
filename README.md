@@ -51,6 +51,23 @@ con `file://` porque el `<script type="module">` y las fuentes necesitan HTTP.
   motion/calidad), con dirección de arte propia sobre el logo y la carta
   reales facilitados por el propietario.
 
+## Icono de app y página 404
+
+- **"Añadir a inicio":** `apple-touch-icon` (180×180) y `manifest.json`
+  (192×192 y 512×512), generados a partir del mismo recorte transparente del
+  logo real (`assets/img/logo/logo-melao-cutout.png`) sobre fondo crema —
+  nunca un icono inventado. `theme-color` a `#241608` (el ink de la marca)
+  para que la barra del navegador en móvil combine.
+- **`404.html`:** página de error propia (mismo `css/style.css`, tipografía
+  y tono que el resto del sitio) con vuelta al inicio y a la carta.
+  **⚠️ Importante:** como GitHub Pages sirve este archivo para cualquier ruta
+  que no exista, todos sus enlaces y assets usan la ruta absoluta
+  `/melao-carballo-web/...` en vez de relativa — una ruta relativa se
+  resolvería contra la URL rota que escribió el visitante, no contra la raíz
+  del sitio, y el icono/CSS/enlaces de vuelta romperían. Si el sitio pasa a
+  un dominio propio, hay que actualizar esas rutas en `404.html` igual que
+  el resto de URLs absolutas (ver más abajo).
+
 ## Aviso de cookies
 
 El sitio no carga por defecto ninguna pieza que instale cookies. El mapa de

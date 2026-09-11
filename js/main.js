@@ -748,10 +748,10 @@ function runMarquee() {
   }
 }
 
-/* ---------- Hero ambient shader ---------- */
+/* ---------- Hero ambient motif ---------- */
 function runHeroScene() {
   const canvas = document.getElementById("hero-canvas");
-  if (!canvas || !window.WebGLRenderingContext) return;
+  if (!canvas) return;
   const scene = initHeroScene(canvas);
   if (scene) {
     window.addEventListener("pagehide", () => scene.destroy());

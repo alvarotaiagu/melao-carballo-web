@@ -1,0 +1,15 @@
+{
+  "name": "Melao — Carballo",
+  "short_name": "Melao",
+  "description": "Burgers, pinsas y brunch en Carballo. Sabor sin pasaporte.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#FBF1E2",
+  "theme_color": "#241608",
+  "lang": "es",
+  "icons": [
+    { "src": "assets/img/logo/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "assets/img/logo/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
