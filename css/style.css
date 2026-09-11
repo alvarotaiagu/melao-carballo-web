@@ -415,6 +415,33 @@ h2 {
   .origin-list { grid-template-columns: 1fr; }
 }
 
+/* ---------- Marquee divider ----------
+   Continuous, time-based (not scroll-scrubbed) — a decorative rhythm
+   break between "Nuestra mezcla" and "La carta". Paused via
+   ScrollTrigger while offscreen and disabled entirely under reduced
+   motion (see js/main.js), where it falls back to a single static,
+   clipped row. */
+.marquee {
+  overflow: hidden;
+  background: var(--ink);
+  padding: 1.35rem 0;
+}
+.marquee-track { display: flex; width: max-content; will-change: transform; }
+.marquee-seq { display: flex; align-items: center; flex-shrink: 0; }
+.marquee-seq span:not(.marquee-dot) {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-style: italic;
+  font-size: clamp(1.3rem, 2.8vw, 2rem);
+  color: var(--cream);
+  white-space: nowrap;
+  padding: 0 1.4rem;
+}
+.marquee-dot { font-size: 0.9rem; color: var(--coral); flex-shrink: 0; }
+.marquee-seq span:nth-of-type(6n+2).marquee-dot { color: var(--coral); }
+.marquee-seq span:nth-of-type(6n+4).marquee-dot { color: var(--sky); }
+.marquee-seq span:nth-of-type(6n+6).marquee-dot { color: var(--lime); }
+
 /* ---------- Carta ---------- */
 .carta { background: var(--cream-2); }
 .carta-lead {

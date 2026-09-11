@@ -375,6 +375,7 @@ mm.add(
       runHeroIntro();
       runSectionReveals();
       runGhostParallax();
+      runMarquee();
       runHeroScene();
       initScrollSpy();
       initScrollChrome();
@@ -493,6 +494,42 @@ function runGhostParallax() {
       },
     });
   });
+}
+
+/* ---------- Marquee divider: continuous, time-based loop (not
+   scroll-scrubbed) — paused via ScrollTrigger while offscreen so it
+   never animates unseen content. ---------- */
+function runMarquee() {
+  const track = document.querySelector(".marquee-track");
+  if (!track) return;
+
+  function start() {
+    const seqWidth = track.scrollWidth / 2;
+    const pxPerSecond = 55;
+
+    const tween = gsap.to(track, {
+      xPercent: -50,
+      duration: seqWidth / pxPerSecond,
+      ease: "none",
+      repeat: -1,
+    });
+
+    ScrollTrigger.create({
+      trigger: track,
+      start: "top bottom",
+      end: "bottom top",
+      onEnter: () => tween.play(),
+      onEnterBack: () => tween.play(),
+      onLeave: () => tween.pause(),
+      onLeaveBack: () => tween.pause(),
+    });
+  }
+
+  if (document.fonts && document.fonts.status !== "loaded") {
+    document.fonts.ready.then(start);
+  } else {
+    start();
+  }
 }
 
 /* ---------- Hero ambient shader ---------- */
