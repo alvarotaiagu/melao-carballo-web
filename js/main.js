@@ -29,25 +29,27 @@ const splitMap = new Map();
 splitTargets.forEach((el) => splitMap.set(el, splitWords(el)));
 
 /* ---------- Google rating (single source of truth for the UI copy —
-   edit the two values below when the review count changes, instead of
-   hunting through index.html. The JSON-LD aggregateRating stays a plain
-   literal in the HTML on purpose: it must be readable without JS for SEO,
-   so keep it in sync with this by hand.) ---------- */
-const GOOGLE_RATING = { value: "4,8", count: 17 };
+   edit the value below when it changes, instead of hunting through
+   index.html. The review count is deliberately NOT shown in the UI text
+   (it goes stale fast as reviews come in) — only the star value, which
+   drifts much more slowly. The JSON-LD aggregateRating keeps its own
+   literal reviewCount in the HTML on purpose, for SEO structured data;
+   update that by hand separately when it changes.) ---------- */
+const GOOGLE_RATING = { value: "4,8" };
 
 function initGoogleRating() {
-  const { value, count } = GOOGLE_RATING;
+  const { value } = GOOGLE_RATING;
   const seal = document.querySelector(".google-seal");
   const sealCount = document.querySelector(".google-seal-count");
   const ctaCount = document.querySelector(".resenas-cta-count");
   if (seal) {
     seal.setAttribute(
       "aria-label",
-      `${value} sobre 5 en Google, ${count} reseñas — ver ficha de Google (se abre en una pestaña nueva)`
+      `${value} sobre 5 en Google — ver ficha de Google (se abre en una pestaña nueva)`
     );
   }
-  if (sealCount) sealCount.textContent = `${count} reseñas en Google`;
-  if (ctaCount) ctaCount.textContent = `Ver las ${count} reseñas en Google (${value}★)`;
+  if (sealCount) sealCount.textContent = "en Google";
+  if (ctaCount) ctaCount.textContent = `Ver las reseñas en Google (${value}★)`;
 }
 initGoogleRating();
 
