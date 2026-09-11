@@ -190,6 +190,14 @@ function initCartaFilters() {
   const pills = Array.from(group.querySelectorAll(".carta-filter"));
 
   function applyFilter(filter, animate) {
+    // Cards also carry an independent tilt tween (initTiltCards, driven by
+    // mousemove) on the same transform property Flip animates. If the
+    // pointer is resting over a card when a pill is clicked, that tween
+    // can keep rendering mid-Flip and leave the card's transform stuck
+    // part-way through the move. Kill any live tweens on the cards first
+    // and block pointer events for the duration of the transition so
+    // nothing new can start one.
+    gsap.killTweensOf(cards);
     const state = animate && window.Flip ? Flip.getState(cards) : null;
 
     cards.forEach((card) => {
@@ -198,12 +206,16 @@ function initCartaFilters() {
     });
 
     if (state) {
+      gsap.set(cards, { pointerEvents: "none" });
       Flip.from(state, {
         duration: 0.5,
         ease: "power2.inOut",
         absolute: true,
         onEnter: (els) => gsap.fromTo(els, { opacity: 0, scale: 0.92 }, { opacity: 1, scale: 1, duration: 0.4, stagger: 0.05, ease: "power2.out" }),
         onLeave: (els) => gsap.to(els, { opacity: 0, scale: 0.92, duration: 0.25, ease: "power2.in" }),
+        onComplete: () => {
+          gsap.set(cards, { clearProps: "transform,pointerEvents" });
+        },
       });
     }
   }
