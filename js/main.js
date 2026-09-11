@@ -1,6 +1,13 @@
 import { initHeroScene } from "./scene.js";
 
-gsap.registerPlugin(ScrollTrigger, Flip);
+// GSAP/ScrollTrigger/Flip load from a CDN — if that fails (ad blocker, flaky
+// network, CDN outage), nothing below should break: only the motion is
+// optional here, not the mobile nav, hours status, map, filters, etc.
+const gsapReady =
+  typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined" && typeof Flip !== "undefined";
+if (gsapReady) {
+  gsap.registerPlugin(ScrollTrigger, Flip);
+}
 
 /* ---------- Word splitting (accessible) ---------- */
 function splitWords(el) {
@@ -67,6 +74,29 @@ function initLqipReveal() {
 }
 initLqipReveal();
 
+/* ---------- Hero photo rotator: cross-fades through a few real dishes
+   with a slow focus-pull (blur → sharp) instead of a single static
+   photo. Off entirely under prefers-reduced-motion, where the first
+   photo just stays put (see the CSS reduced-motion block). ---------- */
+function initHeroRotator() {
+  const card = document.querySelector("[data-hero-rotator]");
+  if (!card) return;
+  const photos = card.querySelectorAll(".hero-photo");
+  const tagEl = card.querySelector("[data-hero-tag]");
+  if (photos.length < 2) return;
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  const tags = ["Así nos ves desde la calle", "Recién salido del horno", "Directo de la barra", "Sin filtros, sin retocar", "Foto real, sin retocar"];
+  let index = 0;
+  setInterval(() => {
+    photos[index].classList.remove("is-active");
+    index = (index + 1) % photos.length;
+    photos[index].classList.add("is-active");
+    if (tagEl) tagEl.textContent = tags[index % tags.length];
+  }, 4600);
+}
+initHeroRotator();
+
 /* ---------- Cookie notice (informational — nothing loads without a
    click, so there is nothing to "accept" beyond acknowledging this) ---------- */
 function initCookieBanner() {
@@ -99,6 +129,13 @@ function initWhatsappFab() {
   const fab = document.querySelector(".whatsapp-fab");
   const hero = document.querySelector(".hero");
   if (!fab || !hero) return;
+  if (!gsapReady) {
+    const observer = new IntersectionObserver(([entry]) => {
+      fab.classList.toggle("is-visible", !entry.isIntersecting);
+    });
+    observer.observe(hero);
+    return;
+  }
   ScrollTrigger.create({
     trigger: hero,
     start: "bottom top",
@@ -244,6 +281,14 @@ function initCartaFilters() {
     // part-way through the move. Kill any live tweens on the cards first
     // and block pointer events for the duration of the transition so
     // nothing new can start one.
+    if (!gsapReady) {
+      cards.forEach((card) => {
+        const match = filter === "todo" || card.dataset.category === filter;
+        card.hidden = !match;
+      });
+      return;
+    }
+
     gsap.killTweensOf(cards);
     const beforeHeight = grid ? grid.getBoundingClientRect().height : 0;
     const state = animate && window.Flip ? Flip.getState(cards) : null;
@@ -311,18 +356,19 @@ function initCartaFilters() {
 initCartaFilters();
 
 /* ---------- Opening hours: live "open now" status + today highlight ----------
-   Real hours (cross-checked across several public listings for this
-   business). Each day can have zero, one or two service windows, and
-   Friday/Saturday close past midnight, so "today" and "still open from
-   last night" are checked separately. ---------- */
+   Official hours (Turismo de Carballo, ficha de Google y AXOBER, confirmadas
+   entre sí). Each day can have zero, one or two service windows; Friday and
+   Saturday close right at midnight, which "today"'s own window already
+   covers (see isOpenAt below), so no cross-midnight spillover into the next
+   day is needed. ---------- */
 const OPENING_HOURS = {
   1: [], // Lunes: cerrado
-  2: [["08:30", "13:30"], ["17:00", "23:00"]], // Martes
-  3: [["08:30", "13:30"], ["17:00", "23:00"]], // Miércoles
-  4: [["08:30", "13:30"], ["17:00", "23:00"]], // Jueves
-  5: [["19:00", "01:00"]], // Viernes
-  6: [["09:00", "13:30"], ["19:00", "01:00"]], // Sábado
-  0: [["10:00", "16:00"], ["18:00", "23:00"]], // Domingo
+  2: [], // Martes: cerrado
+  3: [], // Miércoles: cerrado
+  4: [["09:00", "13:30"]], // Jueves
+  5: [["09:00", "13:30"], ["20:00", "00:00"]], // Viernes
+  6: [["09:00", "13:30"], ["20:00", "00:00"]], // Sábado
+  0: [["10:00", "14:00"], ["20:00", "23:30"]], // Domingo
 };
 
 function toMinutes(hhmm) {
@@ -433,6 +479,7 @@ document.querySelectorAll("[data-scroll-target]").forEach((btn) => {
    leaves — the scroll-spy's current section. Snaps instantly (no tween)
    under prefers-reduced-motion. ---------- */
 function placeNavUnderline(link, animate = true) {
+  if (!gsapReady) return;
   const nav = document.querySelector(".site-nav");
   const underline = nav && nav.querySelector(".nav-underline");
   if (!nav || !underline) return;
@@ -469,6 +516,7 @@ initNavUnderline();
 
 /* ---------- Nav scroll-spy (state, not motion — runs regardless) ---------- */
 function initScrollSpy() {
+  if (!gsapReady) return;
   const navLinks = document.querySelectorAll('.site-nav a[href^="#"], .mobile-nav a[href^="#"], .footer-nav a[href^="#"]');
   if (!navLinks.length) return;
   function setActive(id) {
@@ -491,6 +539,7 @@ function initScrollSpy() {
 /* ---------- Scroll chrome: progress bar + header elevation (state, not
    motion — runs regardless of prefers-reduced-motion) ---------- */
 function initScrollChrome() {
+  if (!gsapReady) return;
   const bar = document.querySelector(".scroll-progress-bar");
   const header = document.querySelector(".site-header");
   if (bar) {
@@ -527,9 +576,13 @@ function initSpotlight() {
 }
 
 /* ---------- Motion setup ---------- */
-const mm = gsap.matchMedia();
+if (!gsapReady) {
+  document.body.classList.add("motion-reduced");
+}
 
-mm.add(
+const mm = gsapReady ? gsap.matchMedia() : null;
+
+if (mm) mm.add(
   {
     isMotion: "(prefers-reduced-motion: no-preference)",
     isFinePointer: "(pointer: fine)",
@@ -581,20 +634,11 @@ mm.add(
 
 /* ---------- Hero intro (runs once, on load) ---------- */
 function runHeroIntro() {
-  const titleWords = splitMap.get(document.querySelector(".hero-title"));
-  const claimWords = splitMap.get(document.querySelector(".hero-claim"));
-  if (titleWords) gsap.set(titleWords, { yPercent: 110, opacity: 0 });
-  if (claimWords) gsap.set(claimWords, { yPercent: 110, opacity: 0 });
-
   const tl = gsap.timeline({ delay: 0.15 });
   tl.from(".site-header", { y: -24, opacity: 0, duration: 0.7, ease: "power3.out" });
   tl.from(".hero-eyebrow", { y: 12, opacity: 0, duration: 0.5, ease: "power2.out" }, "-=0.35");
-  if (titleWords) {
-    tl.to(titleWords, { yPercent: 0, opacity: 1, duration: 0.95, stagger: 0.055, ease: "power4.out" }, "-=0.2");
-  }
-  if (claimWords) {
-    tl.to(claimWords, { yPercent: 0, opacity: 1, duration: 0.7, stagger: 0.02, ease: "power3.out" }, "-=0.55");
-  }
+  tl.from(".hero-title", { y: 20, opacity: 0, duration: 0.7, ease: "power3.out" }, "-=0.25");
+  tl.from(".hero-claim", { y: 16, opacity: 0, duration: 0.6, ease: "power2.out" }, "-=0.45");
   tl.from(".hero-actions", { y: 14, opacity: 0, duration: 0.6, ease: "power2.out" }, "-=0.35");
   tl.from(".hero-media", { y: 26, opacity: 0, duration: 0.9, ease: "power3.out" }, "-=0.75");
   tl.from(".scroll-cue", { opacity: 0, duration: 0.5 }, "-=0.2");

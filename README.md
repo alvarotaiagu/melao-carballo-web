@@ -40,9 +40,13 @@ con `file://` porque el `<script type="module">` y las fuentes necesitan HTTP.
   con Playwright, `javaScriptEnabled: false`). `prefers-reduced-motion:
   reduce` desactiva Lenis, el shader, el cursor personalizado y el badge
   giratorio, y muestra los estados finales directamente.
-- **Icons:** Solar (Iconify) para los símbolos de interfaz; el logo de
-  Instagram es el SVG oficial de "Iconify Logos", usado porque enlaza a la
-  cuenta real del negocio.
+- **Icons:** Solar (Iconify) para los símbolos de interfaz. El icono de
+  Instagram usaba antes el logo oficial multicolor de "Iconify Logos"
+  (`logos:instagram-icon`), pero al ser un SVG de color fijo no heredaba
+  `currentColor` y quedaba desentonado junto a los demás iconos de línea
+  (coral en el footer, sky en "Encuéntranos") — cambiado el 2026-09-11 a
+  `mdi:instagram` (contorno, un solo color) en las cuatro apariciones
+  (nav, info-list, follow-cta, footer) para que combine con el resto.
 - **Skill de diseño usada:** `build-awwwards-quality-sites` (sistema de
   motion/calidad), con dirección de arte propia sobre el logo y la carta
   reales facilitados por el propietario.
@@ -62,27 +66,48 @@ que aceptar mientras no se cargue el mapa. La elección se guarda en
 **Confirmado y usado tal cual:**
 - Nombre, logo real, cinco fotos reales (plato, barra, cóctel, postre, sala),
   cuenta de Instagram (`@melaocarballo`).
-- Dirección (Avenida Ponte da Pedra, 18, 15100 Carballo) y horario: cruzados
-  entre varios directorios públicos independientes (búsqueda web,
-  rutaculinaria.com, cafeelsiglo.es) que coinciden en los mismos datos.
-- Teléfono (604 05 77 96): aparece igual en tres de esas mismas fuentes
-  independientes, pero **ninguna es el propio negocio** — conviene que el
-  propietario lo confirme antes de publicar.
+- Dirección (Avenida Ponte da Pedra, 18, 15100 Carballo), teléfonos
+  (604 057 796 y 697 11 44 70), correo (`melaocarballo@gmail.com`), fecha de
+  apertura (junio de 2023) y horario: actualizados el 2026-09-11 cruzando
+  el portal oficial de Turismo de Carballo, la ficha de Google del negocio y
+  AXOBER (asociación empresarial), que coinciden entre sí — sustituye al
+  cruce de directorios genéricos usado antes. El teléfono principal
+  (604 057 796) es el que se usa en `tel:`/WhatsApp/JSON-LD; el segundo
+  (697 11 44 70) se muestra como alternativa de contacto.
+- Horario: el real (jueves a domingo, con hueco de tarde) es bastante más
+  corto que el que tenía la web antes (que asumía apertura martes-domingo
+  con turno de tarde) — implementado en `js/main.js` (`OPENING_HOURS`, con
+  hasta dos franjas por día) y calcula "Abierto ahora" / "Cerrado ahora" en
+  vivo. Viernes y sábado cierran justo a medianoche (`"00:00"`), lo que ya
+  queda cubierto por la propia franja del día en `isOpenAt()`, así que no
+  hace falta lógica de arrastre al día siguiente. Si el horario cambia, hay
+  que editar `OPENING_HOURS`, la lista visible en `#hours-list` (`index.html`)
+  y las mismas horas en el JSON-LD.
+- Servicios: pet friendly (perros dentro y en terraza), accesible (acceso,
+  baño y mesas adaptados) y para llevar/a domicilio — añadidos como fila de
+  datos en "Encuéntranos" (`.info-list--services`) y como `amenityFeature`
+  en el JSON-LD. Antes no se mostraban en ningún sitio de la web.
 - Carta: los platos y precios mostrados en "La carta" están tomados
   literalmente de fotos reales de la carta física del propio local
   (guardadas en `fuentes-carta/`), sin inventar ningún plato ni precio. Es
   solo una selección — está marcado como tal ("Esto es solo un aperitivo…").
   Los precios pueden haber cambiado desde que se fotografió la carta.
 
-**⚠️ Asumido, pendiente de confirmar con el propietario:**
-- El horario mostrado combina los datos que coinciden entre fuentes de
-  terceros; no viene de una confirmación directa del negocio. Está
-  implementado en `js/main.js` (`OPENING_HOURS`, con hasta dos franjas por
-  día) y calcula "Abierto ahora" / "Cerrado ahora" en vivo, incluyendo los
-  cruces de medianoche de viernes y sábado — verificado con 20 casos de
-  prueba (cada franja, cada hueco entre servicios, cada cruce de
-  medianoche). Si el horario cambia, basta con editar `OPENING_HOURS` (y las
-  mismas horas en el JSON-LD de `index.html`).
+**⚠️ Pendiente:**
+- El horario quedó confirmado el 2026-09-11: el propietario pasó el panel
+  de horario de su propia ficha de Google (el que trae el botón "Sugerir
+  nuevos horarios", solo visible gestionando la ficha) y coincide exacto,
+  día a día, con lo que ya había en `OPENING_HOURS`/`#hours-list`/JSON-LD
+  — jueves 9:00–13:30, viernes y sábado 9:00–13:30 y 20:00–24:00, domingo
+  10:00–14:00 y 20:00–23:30, lunes a miércoles cerrado. Esa misma ficha
+  desglosa además "Desayuno" (8:30–13:00), "Cena" (20:00–23:30, con un
+  resto de 0:00–0:30 que es el cierre de sábado noche cruzando a domingo)
+  y "Entrega a domicilio" (20:30–23:40) — son estimaciones automáticas de
+  Google a partir de reseñas/actividad, no horario fijado por el negocio,
+  así que no se han usado para sustituir el horario general ya confirmado;
+  quedan aquí anotadas por si en algún momento interesa precisar el rango
+  de reparto a domicilio en la web. El segundo teléfono sigue sin
+  confirmación directa del propietario.
 - Los metadatos usan `https://alvarotaiagu.github.io/melao-carballo-web/`
   (la URL de la vista previa gratuita en GitHub Pages) como dominio; no hay
   dominio propio confirmado todavía. Cuando el negocio tenga su propio
@@ -104,15 +129,20 @@ que aceptar mientras no se cargue el mapa. La elección se guarda en
   literal en el HTML a propósito (Google lo pide para los datos
   estructurados) — si la cifra cambia, hay que actualizarlo ahí a mano.
 - Sección "Reseñas" (`#resenas`): tres citas textuales, tomadas literalmente
-  de reseñas reales de Google de esta ficha (Jose Manuel Viaño, Yolanda Rg,
-  Jorge Delgado Nieto — cruzadas vía restaurantguru.com, que agrega el
-  listado público de Google, y verificadas contra la dirección del propio
-  local). No se ha inventado ni retocado ninguna frase, incluida la
-  reseña más comedida ("comida normalita"), a propósito, para no enseñar
-  solo las que suenan mejor. Cada tarjeta enlaza a Google mediante el botón
-  final ("Ver las reseñas en Google"), que reutiliza el mismo enlace de
-  la ficha ya verificado arriba, para que cualquiera pueda comprobarlas.
-  Están replicadas también en el array `review` del JSON-LD.
+  de reseñas reales de Google de esta ficha (Rodrigo S., Yolanda R., Paty
+  P.). Yolanda se cruzó vía restaurantguru.com (nombre original en esa
+  fuente: "Yolanda Rg", recortado a "Yolanda R." el 2026-09-11 para
+  unificar criterio); Paty P. y Rodrigo S. las aportó el propietario
+  directamente con capturas de su propia ficha de Google, sustituyendo a
+  las reseñas de Jorge Delgado Nieto ("comida normalita") y Jose Manuel
+  Viaño que había antes. No se ha inventado ni retocado ninguna frase de
+  las reseñas en sí — el único ajuste es de formato: las tres usan ahora
+  nombre + inicial del apellido, no el apellido completo, por discreción
+  con la identidad de quien reseña. Cada tarjeta enlaza a Google mediante
+  el botón final ("Ver las reseñas en Google"), que reutiliza el mismo
+  enlace de la ficha ya verificado arriba, para que cualquiera pueda
+  comprobarlas. Están replicadas también en el array `review` del
+  JSON-LD.
 
 ## Validación hecha
 
