@@ -451,12 +451,41 @@ h2 {
   font-size: 1.02rem;
   line-height: 1.6;
 }
+.carta-filters {
+  margin-top: 2.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+.carta-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.55rem 1.1rem;
+  border-radius: 100px;
+  border: 1.5px solid var(--line);
+  background: var(--paper);
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+.carta-filter iconify-icon { font-size: 1.05rem; }
+.carta-filter:hover { border-color: var(--coral-deep); color: var(--ink); }
+.carta-filter[aria-checked="true"] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--cream);
+}
+.carta-filter:active { transform: scale(0.96); }
+
 .carta-grid {
-  margin-top: 3rem;
+  margin-top: 2rem;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1.5rem;
 }
+.carta-card[hidden] { display: none; }
 .carta-card {
   background: var(--paper);
   border-radius: 1.25rem;

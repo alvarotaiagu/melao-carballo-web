@@ -1,6 +1,6 @@
 import { initHeroScene } from "./scene.js";
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, Flip);
 
 /* ---------- Word splitting (accessible) ---------- */
 function splitWords(el) {
@@ -178,6 +178,61 @@ function initLightbox() {
   nextBtn.addEventListener("click", () => show(currentIndex + 1));
 }
 initLightbox();
+
+/* ---------- Carta filters: a radiogroup of category pills that shows
+   only the matching card(s). Works with or without motion — under
+   prefers-reduced-motion it just swaps instantly; otherwise GSAP Flip
+   animates the grid reflow and fades the entering/leaving cards. ---------- */
+function initCartaFilters() {
+  const group = document.querySelector(".carta-filters");
+  const cards = Array.from(document.querySelectorAll(".carta-card"));
+  if (!group || !cards.length) return;
+  const pills = Array.from(group.querySelectorAll(".carta-filter"));
+
+  function applyFilter(filter, animate) {
+    const state = animate && window.Flip ? Flip.getState(cards) : null;
+
+    cards.forEach((card) => {
+      const match = filter === "todo" || card.dataset.category === filter;
+      card.hidden = !match;
+    });
+
+    if (state) {
+      Flip.from(state, {
+        duration: 0.5,
+        ease: "power2.inOut",
+        absolute: true,
+        onEnter: (els) => gsap.fromTo(els, { opacity: 0, scale: 0.92 }, { opacity: 1, scale: 1, duration: 0.4, stagger: 0.05, ease: "power2.out" }),
+        onLeave: (els) => gsap.to(els, { opacity: 0, scale: 0.92, duration: 0.25, ease: "power2.in" }),
+      });
+    }
+  }
+
+  function selectPill(pill, { focus = false, animate = true } = {}) {
+    pills.forEach((p) => {
+      const active = p === pill;
+      p.setAttribute("aria-checked", active ? "true" : "false");
+      p.tabIndex = active ? 0 : -1;
+    });
+    if (focus) pill.focus();
+    applyFilter(pill.dataset.filter, animate);
+  }
+
+  pills.forEach((pill, i) => {
+    pill.addEventListener("click", () => {
+      if (pill.getAttribute("aria-checked") === "true") return;
+      selectPill(pill, { animate: !reduceQuery.matches });
+    });
+    pill.addEventListener("keydown", (e) => {
+      const moves = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 };
+      if (!(e.key in moves)) return;
+      e.preventDefault();
+      const next = pills[(i + moves[e.key] + pills.length) % pills.length];
+      selectPill(next, { focus: true, animate: !reduceQuery.matches });
+    });
+  });
+}
+initCartaFilters();
 
 /* ---------- Opening hours: live "open now" status + today highlight ----------
    Real hours (cross-checked across several public listings for this
@@ -468,14 +523,15 @@ function runSectionReveals() {
     if (headingWords) {
       tl.to(headingWords, { yPercent: 0, opacity: 1, duration: 0.8, stagger: 0.05, ease: "power4.out" });
     }
-    tl.to(blocks, { y: 0, opacity: 1, duration: 0.7, stagger: 0.06, ease: "power2.out" }, headingWords ? "-=0.35" : 0);
+    tl.to(blocks, { y: 0, opacity: 1, duration: 0.6, stagger: 0.05, ease: "power2.out" }, headingWords ? "-=0.35" : 0);
     tl.to(
       cards,
-      { y: 0, opacity: 1, scale: 1, duration: 0.85, stagger: 0.09, ease: "power3.out" },
-      headingWords || blocks.length ? "-=0.4" : 0
+      { y: 0, opacity: 1, scale: 1, duration: 0.6, stagger: Math.min(0.07, 0.4 / Math.max(cards.length, 1)), ease: "power3.out" },
+      headingWords || blocks.length ? "-=0.35" : 0
     );
     if (rows.length) {
-      tl.to(rows, { opacity: 1, duration: 0.4, stagger: 0.025, ease: "power1.out" }, "-=0.35");
+      const rowStagger = Math.min(0.02, 0.4 / rows.length);
+      tl.to(rows, { opacity: 1, duration: 0.25, stagger: rowStagger, ease: "power1.out" }, "-=0.3");
     }
   });
 }

@@ -223,8 +223,32 @@
         mucho más) te espera en el local y en nuestro Instagram. Precios de referencia; pueden variar.
       </p>
 
+      <div class="carta-filters" role="radiogroup" aria-label="Filtrar la carta por categoría">
+        <button type="button" class="carta-filter" role="radio" aria-checked="true" data-filter="todo" tabindex="0">
+          <span>Todo</span>
+        </button>
+        <button type="button" class="carta-filter" role="radio" aria-checked="false" data-filter="desayuno" tabindex="-1">
+          <iconify-icon icon="solar:sunrise-linear" aria-hidden="true"></iconify-icon><span>Desayuno</span>
+        </button>
+        <button type="button" class="carta-filter" role="radio" aria-checked="false" data-filter="compartir" tabindex="-1">
+          <iconify-icon icon="solar:widget-add-linear" aria-hidden="true"></iconify-icon><span>Para compartir</span>
+        </button>
+        <button type="button" class="carta-filter" role="radio" aria-checked="false" data-filter="hamburguesas" tabindex="-1">
+          <iconify-icon icon="solar:fire-linear" aria-hidden="true"></iconify-icon><span>Hamburguesas</span>
+        </button>
+        <button type="button" class="carta-filter" role="radio" aria-checked="false" data-filter="pinsas" tabindex="-1">
+          <iconify-icon icon="solar:pizza-slice-linear" aria-hidden="true"></iconify-icon><span>Pinsas</span>
+        </button>
+        <button type="button" class="carta-filter" role="radio" aria-checked="false" data-filter="postres" tabindex="-1">
+          <iconify-icon icon="solar:cake-linear" aria-hidden="true"></iconify-icon><span>Postres</span>
+        </button>
+        <button type="button" class="carta-filter" role="radio" aria-checked="false" data-filter="bebidas" tabindex="-1">
+          <iconify-icon icon="solar:cup-hot-linear" aria-hidden="true"></iconify-icon><span>Bebidas</span>
+        </button>
+      </div>
+
       <div class="carta-grid">
-        <article class="carta-card">
+        <article class="carta-card" data-category="desayuno">
           <header class="carta-card-head">
             <iconify-icon icon="solar:sunrise-linear" aria-hidden="true"></iconify-icon>
             <div>
@@ -240,7 +264,7 @@
           </ul>
         </article>
 
-        <article class="carta-card">
+        <article class="carta-card" data-category="compartir">
           <header class="carta-card-head">
             <iconify-icon icon="solar:widget-add-linear" aria-hidden="true"></iconify-icon>
             <div>
@@ -256,7 +280,7 @@
           </ul>
         </article>
 
-        <article class="carta-card">
+        <article class="carta-card" data-category="hamburguesas">
           <header class="carta-card-head">
             <iconify-icon icon="solar:fire-linear" aria-hidden="true"></iconify-icon>
             <div>
@@ -272,7 +296,7 @@
           </ul>
         </article>
 
-        <article class="carta-card">
+        <article class="carta-card" data-category="pinsas">
           <header class="carta-card-head">
             <iconify-icon icon="solar:pizza-slice-linear" aria-hidden="true"></iconify-icon>
             <div>
@@ -288,7 +312,7 @@
           </ul>
         </article>
 
-        <article class="carta-card">
+        <article class="carta-card" data-category="postres">
           <header class="carta-card-head">
             <iconify-icon icon="solar:cake-linear" aria-hidden="true"></iconify-icon>
             <div>
@@ -304,7 +328,7 @@
           </ul>
         </article>
 
-        <article class="carta-card">
+        <article class="carta-card" data-category="bebidas">
           <header class="carta-card-head">
             <iconify-icon icon="solar:cup-hot-linear" aria-hidden="true"></iconify-icon>
             <div>
@@ -519,6 +543,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.15.0/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.15.0/ScrollTrigger.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.15.0/Flip.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/lenis@1.3.26/dist/lenis.min.js"></script>
 <script type="module" src="js/main.js"></script>
 </body>
