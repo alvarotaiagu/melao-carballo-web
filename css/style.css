@@ -104,7 +104,12 @@ h2 {
 
 /* ---------- Split word reveal ---------- */
 .split-wrap { display: inline; }
-.split-word { display: inline-block; overflow: hidden; }
+.split-word {
+  display: inline-block;
+  overflow: hidden;
+  padding: 0.12em 0;
+  margin: -0.12em 0;
+}
 .split-word > span { display: inline-block; will-change: transform; }
 
 /* ---------- Header ---------- */
@@ -337,6 +342,9 @@ h2 {
   position: absolute;
   top: -1.6rem; right: -1.2rem;
   width: 108px; height: 108px;
+  border-radius: 50%;
+  background: var(--ink);
+  box-shadow: 0 14px 26px -12px rgba(36, 22, 8, 0.55);
   color: var(--paper);
 }
 .hero-badge { width: 100%; height: 100%; animation: spin 22s linear infinite; }
@@ -677,6 +685,7 @@ h2 {
   position: absolute;
   left: 0.9rem; bottom: 0.8rem;
   color: var(--paper);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.45);
   font-size: 0.85rem;
   font-weight: 600;
   opacity: 0;
@@ -708,7 +717,116 @@ h2 {
   .cocina-item:nth-of-type(3) { grid-column: 2 / 3; grid-row: 2 / 3; }
   .cocina-item:nth-of-type(4) { grid-column: 1 / 2; grid-row: 3 / 4; }
   .cocina-item:nth-of-type(5) { grid-column: 2 / 3; grid-row: 3 / 4; }
+  /* No hover on touch devices, so the darkening scrim and caption/expand
+     controls stay permanently on here instead of only appearing on
+     :hover — otherwise the caption text sits directly on the raw photo
+     with nothing behind it and reads as a washed-out grey smudge. */
+  .cocina-item::after { opacity: 1; }
   .cocina-caption, .cocina-expand { opacity: 1; transform: none; }
+}
+
+/* ---------- Reseñas (real, quoted Google reviews — no stock testimonials) ---------- */
+.resenas { background: var(--cream-2); }
+.resenas-lead {
+  margin-top: 1.25rem;
+  max-width: 40rem;
+  color: var(--ink-soft);
+  font-size: 1.02rem;
+  line-height: 1.6;
+}
+
+.resenas-grid {
+  margin-top: 2.75rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.review-card {
+  position: relative;
+  background: var(--paper);
+  border: 1px solid var(--line-soft);
+  border-radius: 1.25rem;
+  padding: 2rem 1.9rem 1.7rem;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.review-card:hover {
+  border-color: var(--coral-tint);
+  box-shadow: 0 30px 50px -30px rgba(36, 22, 8, 0.4);
+}
+.review-mark {
+  position: absolute;
+  top: -1.4rem; right: 0.6rem;
+  font-family: var(--serif);
+  font-size: 7.5rem;
+  font-weight: 680;
+  line-height: 1;
+  color: color-mix(in srgb, var(--ink) 8%, transparent);
+  pointer-events: none;
+}
+.review-card-top {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.review-stars { display: inline-flex; gap: 2px; color: #F2A93B; font-size: 0.85rem; }
+.review-source {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--ink-faint);
+}
+.review-source iconify-icon { font-size: 1rem; }
+.review-quote {
+  position: relative;
+  margin-top: 1.4rem;
+  font-family: var(--serif);
+  font-size: 1.14rem;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--ink);
+  flex: 1;
+}
+.review-meta {
+  position: relative;
+  margin-top: 1.6rem;
+  padding-top: 1.3rem;
+  border-top: 1px solid var(--line-soft);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.review-avatar {
+  flex-shrink: 0;
+  width: 2.4rem; height: 2.4rem;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--serif);
+  font-weight: 620;
+  font-size: 0.9rem;
+  color: var(--paper);
+  background: var(--coral-deep);
+}
+.review-avatar--sky { background: var(--sky-deep); }
+.review-avatar--lime { background: var(--lime-deep); }
+.review-who { display: flex; flex-direction: column; gap: 0.1rem; font-size: 0.88rem; }
+.review-who strong { font-weight: 700; }
+.review-who span { color: var(--ink-faint); font-size: 0.8rem; }
+
+.resenas-cta { margin-top: 2.5rem; }
+.resenas-cta iconify-icon { font-size: 1.15rem; }
+
+@media (max-width: 900px) {
+  .resenas-grid { grid-template-columns: 1fr; }
 }
 
 /* ---------- Lightbox ---------- */
@@ -899,40 +1017,65 @@ h2 {
   z-index: 170;
   display: inline-flex;
   align-items: center;
-  gap: 0.6rem;
-  padding: 0.8rem 1.3rem 0.8rem 0.8rem;
+  gap: 0.65rem;
+  padding: 0.7rem 1.4rem 0.7rem 0.7rem;
   border-radius: 100px;
-  background: var(--paper);
-  color: var(--ink);
+  background: linear-gradient(160deg, color-mix(in srgb, var(--lime) 92%, white) 0%, var(--lime) 45%, var(--lime-deep) 100%);
+  color: var(--paper);
   font-weight: 700;
   font-size: 0.92rem;
-  box-shadow: 0 16px 34px -14px rgba(36, 22, 8, 0.5);
+  letter-spacing: 0.01em;
+  box-shadow:
+    0 1px 0 0 color-mix(in srgb, white 35%, transparent) inset,
+    0 -14px 20px -12px color-mix(in srgb, var(--lime-deep) 55%, transparent) inset,
+    0 3px 8px -2px rgba(36, 22, 8, 0.35),
+    0 20px 38px -16px rgba(36, 22, 8, 0.55);
+  border: 1px solid color-mix(in srgb, var(--paper) 55%, var(--lime-deep) 45%);
   opacity: 0;
   transform: translateY(18px) scale(0.9);
   pointer-events: none;
-  transition: opacity 0.4s ease, transform 0.4s ease, box-shadow 0.25s ease, bottom 0.3s ease;
+  transition: opacity 0.4s ease, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease, bottom 0.3s ease, background-position 0.4s ease;
 }
 .whatsapp-fab.is-visible { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
 .whatsapp-fab:hover, .whatsapp-fab:focus-visible {
-  box-shadow: 0 20px 42px -14px rgba(36, 22, 8, 0.6);
-  transform: translateY(-3px) scale(1);
+  box-shadow:
+    0 1px 0 0 color-mix(in srgb, white 45%, transparent) inset,
+    0 -14px 20px -12px color-mix(in srgb, var(--lime-deep) 60%, transparent) inset,
+    0 4px 10px -2px rgba(36, 22, 8, 0.4),
+    0 26px 46px -16px rgba(36, 22, 8, 0.6);
+  transform: translateY(-4px) scale(1.03);
 }
-.whatsapp-fab.is-visible:hover, .whatsapp-fab.is-visible:focus-visible { transform: translateY(-3px) scale(1); }
-.whatsapp-fab iconify-icon { font-size: 1.65rem; flex-shrink: 0; position: relative; }
-.whatsapp-fab-label { white-space: nowrap; position: relative; }
+.whatsapp-fab.is-visible:hover, .whatsapp-fab.is-visible:focus-visible { transform: translateY(-4px) scale(1.03); }
+.whatsapp-fab:active { transform: translateY(-1px) scale(0.98); }
+.whatsapp-fab-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.15rem;
+  height: 2.15rem;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: color-mix(in srgb, white 20%, transparent);
+  box-shadow: 0 1px 2px rgba(36, 22, 8, 0.15) inset;
+  position: relative;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.whatsapp-fab:hover .whatsapp-fab-icon, .whatsapp-fab:focus-visible .whatsapp-fab-icon { transform: rotate(-8deg) scale(1.08); }
+.whatsapp-fab-icon iconify-icon { font-size: 1.3rem; color: var(--paper); filter: drop-shadow(0 1px 1px rgba(36, 22, 8, 0.25)); }
+.whatsapp-fab-label { white-space: nowrap; position: relative; text-shadow: 0 1px 1px rgba(36, 22, 8, 0.15); }
 body.has-cookie-banner .whatsapp-fab { bottom: 7.5rem; }
 
 .whatsapp-fab-pulse {
   position: absolute;
-  inset: 0;
+  inset: -1px;
   border-radius: 100px;
-  background: color-mix(in srgb, var(--lime) 60%, transparent);
+  border: 1.5px solid color-mix(in srgb, var(--lime) 70%, transparent);
   animation: whatsapp-pulse 2.6s ease-out infinite;
   z-index: -1;
 }
 @keyframes whatsapp-pulse {
-  0% { transform: scale(1); opacity: 0.5; }
-  100% { transform: scale(1.4); opacity: 0; }
+  0% { transform: scale(1); opacity: 0.65; }
+  100% { transform: scale(1.22); opacity: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
   .whatsapp-fab-pulse { animation: none; opacity: 0; }
@@ -940,7 +1083,7 @@ body.has-cookie-banner .whatsapp-fab { bottom: 7.5rem; }
 }
 @media (max-width: 560px) {
   .whatsapp-fab-label { display: none; }
-  .whatsapp-fab { padding: 0.8rem; }
+  .whatsapp-fab { padding: 0.6rem; }
   body.has-cookie-banner .whatsapp-fab { bottom: 13rem; }
 }
 

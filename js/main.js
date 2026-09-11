@@ -28,6 +28,29 @@ const splitTargets = document.querySelectorAll("[data-split-word]");
 const splitMap = new Map();
 splitTargets.forEach((el) => splitMap.set(el, splitWords(el)));
 
+/* ---------- Google rating (single source of truth for the UI copy —
+   edit the two values below when the review count changes, instead of
+   hunting through index.html. The JSON-LD aggregateRating stays a plain
+   literal in the HTML on purpose: it must be readable without JS for SEO,
+   so keep it in sync with this by hand.) ---------- */
+const GOOGLE_RATING = { value: "4,8", count: 17 };
+
+function initGoogleRating() {
+  const { value, count } = GOOGLE_RATING;
+  const seal = document.querySelector(".google-seal");
+  const sealCount = document.querySelector(".google-seal-count");
+  const ctaCount = document.querySelector(".resenas-cta-count");
+  if (seal) {
+    seal.setAttribute(
+      "aria-label",
+      `${value} sobre 5 en Google, ${count} reseñas — ver ficha de Google (se abre en una pestaña nueva)`
+    );
+  }
+  if (sealCount) sealCount.textContent = `${count} reseñas en Google`;
+  if (ctaCount) ctaCount.textContent = `Ver las ${count} reseñas en Google (${value}★)`;
+}
+initGoogleRating();
+
 /* ---------- Blur-up image reveal (a loading state, not decoration —
    runs regardless of motion/pointer preferences) ---------- */
 function initLqipReveal() {
@@ -595,7 +618,7 @@ function runSectionReveals() {
       : null;
     const blocks = group.querySelectorAll("p, .estrella-cta");
     const cards = group.querySelectorAll(
-      ".origin-card, .carta-card, .cocina-item, .hours-card, .info-list li, .map-card"
+      ".origin-card, .carta-card, .cocina-item, .review-card, .hours-card, .info-list li, .map-card"
     );
     const rows = group.querySelectorAll(".carta-card .carta-items li, .hours-list li");
 
@@ -711,7 +734,7 @@ function initCustomCursor() {
   }
   window.addEventListener("pointermove", onMove, { passive: true });
 
-  document.querySelectorAll("a, button, .carta-card, .origin-card").forEach((el) => {
+  document.querySelectorAll("a, button, .carta-card, .origin-card, .review-card").forEach((el) => {
     el.addEventListener("mouseenter", () => ring.classList.add("is-hover"));
     el.addEventListener("mouseleave", () => ring.classList.remove("is-hover"));
   });
@@ -741,7 +764,7 @@ function initMagneticButtons() {
 
 /* ---------- Tilt on carta + origin cards ---------- */
 function initTiltCards() {
-  document.querySelectorAll(".carta-card, .origin-card").forEach((el) => {
+  document.querySelectorAll(".carta-card, .origin-card, .review-card").forEach((el) => {
     const rotX = gsap.quickTo(el, "rotationX", { duration: 0.4, ease: "power2" });
     const rotY = gsap.quickTo(el, "rotationY", { duration: 0.4, ease: "power2" });
     el.addEventListener("mousemove", (e) => {

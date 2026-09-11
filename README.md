@@ -93,9 +93,23 @@ que aceptar mientras no se cargue el mapa. La elección se guarda en
   número hasta que el propietario confirmó la cifra real directamente sobre
   la ficha de Google del negocio: **4.8★, 17 reseñas**
   (`https://share.google/bW9lgUvX52iownn9A`). Se muestra como sello en la
-  hero (`.google-seal` en `index.html`/`css/style.css`, enlaza a la ficha) y
-  en el `aggregateRating` del JSON-LD. Si la cifra cambia, hay que
-  actualizarla en ambos sitios.
+  hero (`.google-seal` en `index.html`/`css/style.css`, enlaza a la ficha).
+  El texto visible (sello, botón "Ver las N reseñas...") se rellena desde un
+  único sitio, `GOOGLE_RATING` al principio de `js/main.js`, para no tener
+  que tocar varias frases sueltas cuando cambie la cifra. La excepción es el
+  `aggregateRating` del JSON-LD, que se deja como literal en el HTML a
+  propósito (debe ser legible sin JS para SEO) — si la cifra cambia, hay que
+  actualizarlo ahí a mano además de en `GOOGLE_RATING`.
+- Sección "Reseñas" (`#resenas`): tres citas textuales, tomadas literalmente
+  de reseñas reales de Google de esta ficha (Jose Manuel Viaño, Yolanda Rg,
+  Jorge Delgado Nieto — cruzadas vía restaurantguru.com, que agrega el
+  listado público de Google, y verificadas contra la dirección del propio
+  local). No se ha inventado ni retocado ninguna frase, incluida la
+  reseña más comedida ("comida normalita"), a propósito, para no enseñar
+  solo las que suenan mejor. Cada tarjeta enlaza a Google mediante el botón
+  final ("Ver las 17 reseñas en Google"), que reutiliza el mismo enlace de
+  la ficha ya verificado arriba, para que cualquiera pueda comprobarlas.
+  Están replicadas también en el array `review` del JSON-LD.
 
 ## Validación hecha
 
