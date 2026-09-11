@@ -524,6 +524,23 @@ h2 {
   .carta-grid { grid-template-columns: 1fr; }
 }
 
+/* ---------- Filosofía (dark rhythm break between La carta and De cocina) ---------- */
+.filosofia { background: var(--ink); text-align: center; }
+.filosofia-inner { max-width: 46rem; margin: 0 auto; }
+.filosofia-quote {
+  margin-top: 1.4rem;
+  font-style: italic;
+  font-weight: 560;
+  font-size: clamp(1.9rem, 5vw, 3.3rem);
+  line-height: 1.28;
+  color: var(--paper);
+}
+.filosofia-dots { display: flex; justify-content: center; gap: 0.6rem; margin-top: 2.2rem; }
+.filosofia-dots span { width: 8px; height: 8px; border-radius: 50%; }
+.filosofia-dots span:nth-child(1) { background: var(--coral); }
+.filosofia-dots span:nth-child(2) { background: var(--sky); }
+.filosofia-dots span:nth-child(3) { background: var(--lime); }
+
 /* ---------- Estrella (kitchen photo gallery) ---------- */
 .estrella-lead { margin-top: 1.25rem; max-width: 40rem; color: var(--ink-soft); font-size: 1.05rem; line-height: 1.65; }
 
