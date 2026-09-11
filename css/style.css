@@ -675,14 +675,19 @@ h2 {
 .cocina-item::after {
   content: "";
   position: absolute; inset: 0;
+  z-index: 1;
   background: linear-gradient(180deg, transparent 55%, color-mix(in srgb, var(--ink) 78%, transparent) 100%);
   opacity: 0;
   transition: opacity 0.3s ease;
 }
 .cocina-item:hover::after, .cocina-item:focus-visible::after { opacity: 1; }
 
+/* z-index above the ::after scrim: as generated content it paints last
+   among the item's own children by default, which was sitting on top of
+   (and greying out) this text instead of behind it as a backdrop. */
 .cocina-caption {
   position: absolute;
+  z-index: 2;
   left: 0.9rem; bottom: 0.8rem;
   color: var(--paper);
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.45);
@@ -696,6 +701,7 @@ h2 {
 
 .cocina-expand {
   position: absolute;
+  z-index: 2;
   top: 0.75rem; right: 0.75rem;
   width: 2rem; height: 2rem;
   border-radius: 50%;
