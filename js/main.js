@@ -447,9 +447,25 @@ const reduceQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 
 let lenis = null;
 
+// Reveal timelines (see runSectionReveals) play at their normal pace once
+// their trigger is crossed — fine for a natural scroll, but a nav click
+// jumps straight to the target and outruns them, landing on a section
+// whose rows are still mid-fade. Force anything above the jump target to
+// its finished state first so navigation always lands on fully-revealed
+// content.
+const revealTimelines = [];
+function completeRevealsBefore(targetEl) {
+  const targetTop = targetEl.getBoundingClientRect().top + window.scrollY;
+  revealTimelines.forEach(({ group, tl }) => {
+    const groupTop = group.getBoundingClientRect().top + window.scrollY;
+    if (groupTop <= targetTop + 40) tl.progress(1);
+  });
+}
+
 function smoothScrollToSelector(selector) {
   const target = document.querySelector(selector);
   if (!target) return;
+  completeRevealsBefore(target);
   const headerOffset = 68;
   if (lenis) {
     lenis.scrollTo(target, { offset: -headerOffset });
@@ -693,6 +709,7 @@ function runSectionReveals() {
       const rowStagger = Math.min(0.02, 0.4 / rows.length);
       tl.to(rows, { opacity: 1, duration: 0.25, stagger: rowStagger, ease: "power1.out" }, "-=0.3");
     }
+    revealTimelines.push({ group, tl });
   });
 }
 
@@ -748,10 +765,10 @@ function runMarquee() {
   }
 }
 
-/* ---------- Hero ambient motif ---------- */
+/* ---------- Hero ambient shader ---------- */
 function runHeroScene() {
   const canvas = document.getElementById("hero-canvas");
-  if (!canvas) return;
+  if (!canvas || !window.WebGLRenderingContext) return;
   const scene = initHeroScene(canvas);
   if (scene) {
     window.addEventListener("pagehide", () => scene.destroy());

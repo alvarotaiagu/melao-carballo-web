@@ -1,165 +1,115 @@
+import * as THREE from "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.186.0/three.module.min.js";
+
 /**
- * Ambient hero motif: three of Melao's own signature dishes — smash burger,
- * tequeño, pinsa — orbiting slowly behind the hero photo card, each tinted
- * one of the logo's three colours and leaning gently toward the pointer.
- * Drawn with plain canvas 2D: each icon is a closed silhouette rendered
- * twice (a larger blurred copy under a smaller sharp one) so the edges
- * read as gooey/gel rather than a flat sticker — an evolution of the
- * abstract colour-blob version this replaced, now with recognisable food.
- * One responsibility — ambient colour, depth and a wink of brand identity
- * — and it stays fully subordinate to the real photo and copy stacked in
- * front of it. Nothing here is required to read or use the page.
+ * Ambient hero shader: three soft gooey blobs in the brand's real logo
+ * colours (coral, sky, lime) that drift behind the hero photo card and
+ * lean gently toward the pointer — an abstract echo of the logo's own
+ * petal burst. One responsibility — ambient colour and depth — and it
+ * stays fully subordinate to the real photo and copy stacked in front
+ * of it. Nothing here is required to read or use the page.
  */
+const VERTEX = `
+  varying vec2 vUv;
+  void main() {
+    vUv = uv;
+    gl_Position = vec4(position.xy, 0.0, 1.0);
+  }
+`;
 
-const CORAL = "#E9573E";
-const CORAL_GLOW = "rgba(233,87,62,0.5)";
-const SKY = "#3FA7C9";
-const SKY_GLOW = "rgba(63,167,201,0.5)";
-const LIME = "#96C93E";
-const LIME_GLOW = "rgba(150,201,62,0.5)";
+const FRAGMENT = `
+  precision highp float;
+  varying vec2 vUv;
+  uniform float uTime;
+  uniform vec2 uResolution;
+  uniform vec2 uPointer;
+  uniform float uIntensity;
+  uniform vec3 uCream;
+  uniform vec3 uCoral;
+  uniform vec3 uSky;
+  uniform vec3 uLime;
 
-const SHAPES = {
-  burger: {
-    outline(ctx, s) {
-      ctx.moveTo(-0.55 * s, -0.05 * s);
-      ctx.arc(0, -0.05 * s, 0.55 * s, Math.PI, 0, false);
-      ctx.lineTo(0.55 * s, 0.5 * s);
-      ctx.quadraticCurveTo(0, 0.68 * s, -0.55 * s, 0.5 * s);
-      ctx.closePath();
-    },
-    details(ctx, s) {
-      for (const dy of [0.1, 0.27, 0.44]) {
-        ctx.beginPath();
-        ctx.moveTo(-0.4 * s, dy * s);
-        ctx.lineTo(0.4 * s, dy * s);
-        ctx.stroke();
-      }
-      ctx.beginPath();
-      for (const [dx, dy, r] of [[-0.15, -0.3, 0.04], [0.12, -0.26, 0.036], [-0.02, -0.4, 0.032]]) {
-        ctx.moveTo((dx + r) * s, dy * s);
-        ctx.arc(dx * s, dy * s, r * s, 0, Math.PI * 2);
-      }
-      ctx.fill();
-    },
-  },
-  tequeno: {
-    outline(ctx, s) {
-      const r = 0.16 * s, half = 0.5 * s;
-      ctx.roundRect(-r, -half, r * 2, half * 2 - r * 0.3, r);
-    },
-    details(ctx, s) {
-      const r = 0.16 * s, half = 0.5 * s;
-      for (const dy of [-0.16, 0.06, 0.28]) {
-        ctx.beginPath();
-        ctx.moveTo(-r * 0.75, dy * s);
-        ctx.lineTo(r * 0.75, (dy + 0.1) * s);
-        ctx.stroke();
-      }
-      ctx.beginPath();
-      ctx.moveTo(-r * 0.5, half * 0.82);
-      ctx.quadraticCurveTo(0, half * 1.3, r * 0.5, half * 0.82);
-      ctx.closePath();
-      ctx.fill();
-    },
-  },
-  pinsa: {
-    outline(ctx, s) {
-      ctx.moveTo(0, 0.62 * s);
-      ctx.lineTo(-0.5 * s, -0.5 * s);
-      ctx.quadraticCurveTo(0, -0.66 * s, 0.5 * s, -0.5 * s);
-      ctx.closePath();
-    },
-    details(ctx, s) {
-      ctx.beginPath();
-      ctx.moveTo(-0.32 * s, -0.28 * s);
-      ctx.quadraticCurveTo(0, -0.4 * s, 0.32 * s, -0.28 * s);
-      ctx.stroke();
-      ctx.beginPath();
-      for (const [dx, dy, r] of [[-0.09, -0.02, 0.045], [0.12, 0.16, 0.04], [-0.05, 0.32, 0.035]]) {
-        ctx.moveTo((dx + r) * s, dy * s);
-        ctx.arc(dx * s, dy * s, r * s, 0, Math.PI * 2);
-      }
-      ctx.fill();
-    },
-  },
-};
+  float blob(vec2 uv, vec2 center, float radius) {
+    float d = length(uv - center);
+    return radius * radius / (d * d + 0.0008);
+  }
 
-const ITEMS = [
-  { icon: "burger", color: CORAL, glow: CORAL_GLOW, radius: 0.15 },
-  { icon: "tequeno", color: SKY, glow: SKY_GLOW, radius: 0.125 },
-  { icon: "pinsa", color: LIME, glow: LIME_GLOW, radius: 0.105 },
-];
+  void main() {
+    vec2 res = uResolution;
+    float aspect = res.x / max(res.y, 1.0);
+    vec2 uv = vUv;
+    vec2 p = (uv - 0.5) * vec2(aspect, 1.0);
 
-function smoothstep(edge0, edge1, x) {
-  const t = Math.min(Math.max((x - edge0) / (edge1 - edge0), 0), 1);
-  return t * t * (3 - 2 * t);
-}
+    float t = uTime * 0.06;
 
-// Mirrors the real vignette on the shader this replaced: fades an icon out
-// as it drifts toward the edge of the hero instead of clipping it abruptly.
-function edgeFade(x, y, W, H) {
-  const dx = x / W - 0.5;
-  const dy = y / H - 0.5;
-  const d = Math.sqrt(dx * dx + dy * dy);
-  return smoothstep(0.95, 0.35, d);
-}
+    vec2 c1 = vec2(sin(t * 1.3) * 0.5, cos(t * 1.1) * 0.32) + vec2(0.18, 0.06);
+    vec2 c2 = vec2(cos(t * 0.9 + 1.7) * 0.42, sin(t * 1.4 + 0.6) * 0.4) - vec2(0.22, 0.1);
+    vec2 c3 = vec2(sin(t * 0.7 + 3.1) * 0.36, cos(t * 0.6 + 2.0) * 0.3) + vec2(-0.05, 0.28);
 
-// The icons are recognisable shapes, not abstract colour — unlike the old
-// shader's blobs, having one drift across the headline reads as a mistake.
-// Keep them anchored near the hero photo card (whichever side/row it's on,
-// desktop or the stacked mobile layout) and fade them out past it.
-function photoAreaFade(x, y, anchor) {
-  if (!anchor) return 1;
-  const dx = (x - anchor.cx) / (anchor.hw + 70);
-  const dy = (y - anchor.cy) / (anchor.hh + 70);
-  const d = Math.sqrt(dx * dx + dy * dy);
-  return smoothstep(1.55, 0.85, d);
-}
+    vec2 pointerPull = uPointer * 0.14;
 
-function drawGooeyIcon(ctx, item, s, alpha) {
-  const shape = SHAPES[item.icon];
-  ctx.save();
-  ctx.shadowColor = item.glow;
-  ctx.shadowBlur = s * 0.22;
-  ctx.filter = `blur(${Math.max(2, s * 0.1)}px)`;
-  ctx.globalAlpha = 0.85 * alpha;
-  ctx.fillStyle = item.color;
-  ctx.beginPath();
-  shape.outline(ctx, s * 1.08);
-  ctx.fill();
-  ctx.restore();
+    float f1 = blob(p, c1 + pointerPull, 0.30);
+    float f2 = blob(p, c2 + pointerPull * 0.6, 0.26);
+    float f3 = blob(p, c3 + pointerPull * 0.35, 0.22);
+    float field = f1 + f2 + f3;
 
-  ctx.save();
-  ctx.globalAlpha = alpha;
-  ctx.fillStyle = item.color;
-  ctx.beginPath();
-  shape.outline(ctx, s * 0.9);
-  ctx.fill();
-  ctx.restore();
+    float edge = smoothstep(0.55, 1.15, field);
+    float core = smoothstep(1.3, 2.6, field);
 
-  ctx.save();
-  ctx.globalAlpha = alpha;
-  ctx.filter = `blur(${Math.max(1, s * 0.02)}px)`;
-  ctx.strokeStyle = "rgba(255,255,255,0.32)";
-  ctx.fillStyle = "rgba(255,255,255,0.32)";
-  ctx.lineWidth = s * 0.03;
-  ctx.lineCap = "round";
-  shape.details(ctx, s * 0.9);
-  ctx.restore();
-}
+    vec3 color = uCream;
+    color = mix(color, uCoral, smoothstep(0.5, 1.1, f1));
+    color = mix(color, uSky, smoothstep(0.5, 1.1, f2));
+    color = mix(color, uLime, smoothstep(0.5, 1.1, f3) * 0.85);
+    color = mix(color, mix(uCoral, uSky, 0.5), core * 0.35);
+
+    vec2 glintPos = uPointer * vec2(aspect, 1.0) * 0.5;
+    float glint = smoothstep(0.5, 0.0, length(p - glintPos)) * edge;
+    color += glint * 0.16;
+
+    float alpha = edge * uIntensity;
+    float vignette = smoothstep(0.95, 0.35, length(uv - 0.5));
+    alpha *= vignette;
+
+    gl_FragColor = vec4(color, alpha);
+  }
+`;
 
 export function initHeroScene(canvas) {
-  let ctx;
+  let renderer;
   try {
-    ctx = canvas.getContext("2d");
-    if (!ctx) return null;
+    renderer = new THREE.WebGLRenderer({
+      canvas,
+      alpha: true,
+      antialias: true,
+      powerPreference: "low-power",
+    });
   } catch (err) {
     return null;
   }
 
-  let W = 0;
-  let H = 0;
-  let photoAnchor = null;
+  const scene = new THREE.Scene();
+  const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+
+  const geometry = new THREE.PlaneGeometry(2, 2);
+  const material = new THREE.ShaderMaterial({
+    vertexShader: VERTEX,
+    fragmentShader: FRAGMENT,
+    transparent: true,
+    depthTest: false,
+    depthWrite: false,
+    uniforms: {
+      uTime: { value: 0 },
+      uResolution: { value: new THREE.Vector2(1, 1) },
+      uPointer: { value: new THREE.Vector2(0, 0) },
+      uIntensity: { value: 0.9 },
+      uCream: { value: new THREE.Color("#FBF1E2") },
+      uCoral: { value: new THREE.Color("#E9573E") },
+      uSky: { value: new THREE.Color("#3FA7C9") },
+      uLime: { value: new THREE.Color("#96C93E") },
+    },
+  });
+
+  const mesh = new THREE.Mesh(geometry, material);
+  scene.add(mesh);
 
   let targetX = 0;
   let targetY = 0;
@@ -177,72 +127,37 @@ export function initHeroScene(canvas) {
 
   function resize() {
     const parent = canvas.parentElement;
-    W = parent.clientWidth;
-    H = parent.clientHeight;
+    const w = parent.clientWidth;
+    const h = parent.clientHeight;
     const dpr = Math.min(window.devicePixelRatio || 1, 1.75);
-    canvas.width = W * dpr;
-    canvas.height = H * dpr;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-    const photoEl = canvas.closest(".hero")?.querySelector(".hero-photo-card");
-    if (photoEl) {
-      const canvasRect = canvas.getBoundingClientRect();
-      const photoRect = photoEl.getBoundingClientRect();
-      photoAnchor = {
-        cx: photoRect.left - canvasRect.left + photoRect.width / 2,
-        cy: photoRect.top - canvasRect.top + photoRect.height / 2,
-        hw: photoRect.width / 2,
-        hh: photoRect.height / 2,
-      };
-    }
+    renderer.setPixelRatio(dpr);
+    renderer.setSize(w, h, false);
+    material.uniforms.uResolution.value.set(w, h);
   }
   resize();
   window.addEventListener("resize", resize);
 
   let running = false;
   let rafId = null;
-  const clock = { start: 0, elapsed: 0 };
+  const clock = new THREE.Clock();
 
   function tick() {
     if (!running) return;
     rafId = requestAnimationFrame(tick);
-    const now = performance.now();
-    const t = ((now - clock.start) / 1000) * 0.9;
+    const dt = Math.min(clock.getDelta(), 0.05);
 
     pointerX += (targetX - pointerX) * 0.04;
     pointerY += (targetY - pointerY) * 0.04;
+    material.uniforms.uPointer.value.set(pointerX, pointerY);
+    material.uniforms.uTime.value += dt * 16.0;
 
-    ctx.clearRect(0, 0, W, H);
-
-    const aspect = W / Math.max(H, 1);
-    const c1 = [Math.sin(t * 1.3) * 0.5 + 0.18, Math.cos(t * 1.1) * 0.32 + 0.06];
-    const c2 = [Math.cos(t * 0.9 + 1.7) * 0.42 - 0.22, Math.sin(t * 1.4 + 0.6) * 0.4 - 0.1];
-    const c3 = [Math.sin(t * 0.7 + 3.1) * 0.36 - 0.05, Math.cos(t * 0.6 + 2.0) * 0.3 + 0.28];
-    const pull = [pointerX * 0.14, pointerY * 0.14];
-    const centers = [
-      [c1[0] + pull[0], c1[1] + pull[1]],
-      [c2[0] + pull[0] * 0.6, c2[1] + pull[1] * 0.6],
-      [c3[0] + pull[0] * 0.35, c3[1] + pull[1] * 0.35],
-    ];
-    const minDim = Math.min(W, H);
-
-    ITEMS.forEach((item, i) => {
-      const [px, py] = centers[i];
-      const x = W * (0.5 + px / aspect);
-      const y = H * (0.5 - py);
-      const alpha = edgeFade(x, y, W, H) * photoAreaFade(x, y, photoAnchor);
-      if (alpha <= 0.01) return;
-      ctx.save();
-      ctx.translate(x, y);
-      drawGooeyIcon(ctx, item, minDim * item.radius, alpha);
-      ctx.restore();
-    });
+    renderer.render(scene, camera);
   }
 
   function start() {
     if (running) return;
     running = true;
-    clock.start = performance.now();
+    clock.start();
     tick();
   }
   function stop() {
@@ -264,12 +179,23 @@ export function initHeroScene(canvas) {
   }
   document.addEventListener("visibilitychange", onVisibility);
 
+  function onContextLost(event) {
+    event.preventDefault();
+    stop();
+    canvas.classList.remove("is-active");
+  }
+  canvas.addEventListener("webglcontextlost", onContextLost);
+
   function destroy() {
     stop();
     io.disconnect();
     window.removeEventListener("pointermove", onPointerMove);
     window.removeEventListener("resize", resize);
     document.removeEventListener("visibilitychange", onVisibility);
+    canvas.removeEventListener("webglcontextlost", onContextLost);
+    geometry.dispose();
+    material.dispose();
+    renderer.dispose();
   }
 
   canvas.classList.add("is-active");
