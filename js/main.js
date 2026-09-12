@@ -82,17 +82,14 @@ function initHeroRotator() {
   const card = document.querySelector("[data-hero-rotator]");
   if (!card) return;
   const photos = card.querySelectorAll(".hero-photo");
-  const tagEl = card.querySelector("[data-hero-tag]");
   if (photos.length < 2) return;
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-  const tags = ["Así nos ves desde la calle", "Recién salido del horno", "Directo de la barra", "Sin filtros, sin retocar", "Foto real, sin retocar"];
   let index = 0;
   setInterval(() => {
     photos[index].classList.remove("is-active");
     index = (index + 1) % photos.length;
     photos[index].classList.add("is-active");
-    if (tagEl) tagEl.textContent = tags[index % tags.length];
   }, 4600);
 }
 initHeroRotator();

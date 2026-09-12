@@ -335,19 +335,6 @@ h2 {
   transform: scale(1);
   filter: saturate(1.08) contrast(1.03) blur(0);
 }
-.hero-photo-tag {
-  position: absolute;
-  left: 1rem; bottom: 1rem;
-  background: color-mix(in srgb, var(--ink) 78%, transparent);
-  color: var(--cream);
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  padding: 0.4rem 0.75rem;
-  border-radius: 100px;
-  backdrop-filter: blur(4px);
-}
-
 .hero-badge-wrap {
   position: absolute;
   top: -1.6rem; right: -1.2rem;
